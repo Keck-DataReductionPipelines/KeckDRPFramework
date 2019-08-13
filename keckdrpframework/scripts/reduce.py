@@ -29,7 +29,7 @@ def reduce(file_name):
     time.sleep(2)
 
     pipeline = Kcwi_pipeline()
-    framework = Framework(pipeline,  'config.cfg')
+    framework = Framework(pipeline,  'KCWI_config.cfg')
     framework.config.instrument = ConfigClass("instr.cfg")
     framework.logger.info("Framework initialized")
 
