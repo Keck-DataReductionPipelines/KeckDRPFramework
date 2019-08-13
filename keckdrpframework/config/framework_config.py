@@ -11,7 +11,7 @@ To do:
 @author: shkwok
 '''
 
-#from models.event import Event
+from keckdrpframework.models.event import Event
 #import datetime
 
 import pkg_resources
@@ -74,7 +74,8 @@ class ConfigClass:
                 parts = line.split('=')
                 if len(parts) > 1:
                     key, val = parts
-                    key = key.strip()              
+                    key = key.strip()
+                    val = val.strip()
                     props[key] = self.getType (val)
             return
         raise Exception("Failed to read configuration file " + fname)
@@ -84,12 +85,12 @@ class ConfigClass:
 
 if __name__ == "__main__":
     Config = ConfigClass ()
-    path = 'config/config.cfg'  # always use slash
-    filepath = pkg_resources.resource_filename(__name__, path)
-    print(filepath)
-    Config.read(filepath)
+    #path = 'config/config.cfg'  # always use slash
+    #filepath = pkg_resources.resource_filename(__name__, path)
+    #print(filepath)
+    #Config.read(filepath)
     #print(Config.__dict__)
     
-    print (Config.denoise_sigmas[1])
-    print (Config.no_event_event)
+    #print (Config.denoise_sigmas[1])
+    #print (Config.no_event_event)
     
