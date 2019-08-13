@@ -62,7 +62,7 @@ class Framework(object):
                 return self.event_queue_hi.get_nowait()
             except:                                  
                 return self.event_queue.get(True, self.config.event_timeout)
-        except Exception as e: 
+        except Exception as e:
             ev = self.config.no_event_event
             if ev is None:
                 return None
@@ -165,6 +165,8 @@ class Framework(object):
                         break
                 except Exception as e:
                     self.logger.error (f"Exception while processing action {action}, {e}")
+                    if self.config.print_trace:
+                        traceback.print_exc()
                     break                
             self.keep_going = False
 
