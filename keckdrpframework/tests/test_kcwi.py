@@ -40,7 +40,7 @@ if __name__ == '__main__':
             #flist = glob.glob(path + '/*.fits')
             flist = ['/Users/lrizzi/KCWI_DATA_1/kb181012_00014.fits',
                      '/Users/lrizzi/KCWI_DATA_1/kb181012_00016.fits']
-            flist = ['/Users/lrizzi/KCWI_DATA_1/kb181012_00016.fits']
+            #flist = ['/Users/lrizzi/KCWI_DATA_1/kb181012_00016.fits']
             for f in flist:
                 args = Arguments(name=f)
                 framework.append_event('next_file', args)

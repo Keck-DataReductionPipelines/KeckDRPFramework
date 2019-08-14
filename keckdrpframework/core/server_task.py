@@ -44,7 +44,10 @@ class DRPF_server_handler (EasyHTTPHandler):
                     val = v[0].strip()
             self.__dict__['_http_' + k] = val
     
-    
+    def trigger_event(self, req, qstr):
+        self._getParameters(qstr)
+
+
     def get_pending_events (self, req, qstr):
         self._getParameters(qstr)
         events, events_hi = self.DRPFramework.getPendingEvents()        

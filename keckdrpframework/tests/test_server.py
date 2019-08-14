@@ -30,12 +30,14 @@ if __name__ == '__main__':
     if len (sys.argv) >= 1:
         #path = sys.argv[1]
 
-        subprocess.Popen('bokeh serve', shell=True)
-        time.sleep(2)
-
         pipeline = Kcwi_pipeline()
-        framework = Framework(pipeline, 'config.cfg')
+        framework = Framework(pipeline, 'KCWI_config.cfg')
         framework.config.instrument = ConfigClass("instr.cfg")
+        if framework.config.instrument.interactive >=1:
+            subprocess.Popen('bokeh serve', shell=True)
+            time.sleep(2)
+
+
         framework.logger.info("Framework initialized")
 
         framework.start_http_server()

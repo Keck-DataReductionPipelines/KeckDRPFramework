@@ -112,7 +112,7 @@ class Framework(object):
                 action_output = pipeline.get_action(action_name)(action, context)
                 if pipeline.get_post_action(action_name)(action, context):
                     if not action.new_event is None:
-                        new_args = Arguments() if action_output is None else action_output 
+                        new_args = Arguments() if action_output is None else action_output
                         self._push_event (action.new_event, new_args)
                     if not action.next_state is None:
                         context.state = action.next_state
@@ -138,13 +138,15 @@ class Framework(object):
         '''
 
         def loop ():
-            #if self.context.config.instrument.interactive >=1:
+            if self.context.config.instrument.interactive >=1:
 
-            self.context.bokeh_session = push_session(curdoc())
-            p=figure()
-            c=column(children=[p])
-            curdoc().add_root(c)
-            self.context.bokeh_session.show(c)
+                self.context.bokeh_session = push_session(curdoc())
+                p=figure()
+                c=column(children=[p])
+                curdoc().add_root(c)
+                self.context.bokeh_session.show(c)
+            else:
+                self.context.bokeh_session=None
 
             while self.keep_going:
                 try:    
