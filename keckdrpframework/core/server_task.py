@@ -46,6 +46,26 @@ class DRPF_server_handler (EasyHTTPHandler):
     
     def trigger_event(self, req, qstr):
         self._getParameters(qstr)
+        event_name = self._http_event_name
+        self.DRPFramework.append_event(event_name, None)
+        return json.dumps("OK"), self.jsonText
+
+    def add_new_event(self, req, qstr):
+        print("Running add_new_event")
+        self._getParameters(qstr)
+        print(self.__dict__)
+        name = self._http_name
+        action= self._http_action
+        state = self._http_state
+        next = self._http_next
+        print("updating event_table")
+        self.DRPFramework.pipeline.event_table[name] = (action, state, next)
+        return json.dumps("OK"), self.jsonText
+
+    def get_event_table(self, req, qstr):
+        print(self.DRPFramework.pipeline.event_table)
+        return json.dumps("OK"), self.jsonText
+
 
 
     def get_pending_events (self, req, qstr):
@@ -101,15 +121,15 @@ class DRPF_server_handler (EasyHTTPHandler):
         self.wfile.write (imgData)
         self.wfile.flush()
         
-    def serveFile (self, req, qstr):
-        print ("here", req, qstr)
-        if ".fits" in req:
-            self._getParameters(qstr)
-            hdus = open_nowarning(req)
-            png = self._img_to_png(hdus[0].data)
-            self._send_imgData(png)        
-            return None, ""
-        return super().serveFile(req, qstr)
+    #def serveFile (self, req, qstr):
+    #    print ("serveFile", req, qstr)
+    #    if ".fits" in req:
+    #        self._getParameters(qstr)
+    #        hdus = open_nowarning(req)
+    #        png = self._img_to_png(hdus[0].data)
+    #        self._send_imgData(png)
+    #        return None, ""
+    #    return super().serveFile(req, qstr)
         
     def echo (self):
         self._getParameters(qstr)

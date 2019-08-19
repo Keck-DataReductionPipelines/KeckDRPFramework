@@ -158,6 +158,7 @@ class EasyHTTPHandler (http.server.SimpleHTTPRequestHandler):
             if fn:
                 return fn (req, qstr)
         except Exception as e:
+            traceback.print_exc()
             return False
         return False
 

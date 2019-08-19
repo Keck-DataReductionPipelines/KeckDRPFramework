@@ -55,6 +55,7 @@ class Framework(object):
         self.context = Processing_context (self.event_queue_hi, self.logger, self.config)
         self.keep_going = True
         self.init_signal ()
+        self.store_arguments = Arguments()
     
     def get_event (self):
         try:
@@ -67,7 +68,8 @@ class Framework(object):
             if ev is None:
                 return None
             time.sleep(self.config.no_event_wait_time)
-            ev.args = Arguments(name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now()))  
+            ev.args = Arguments(name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now()))
+            ev.args = None
             return ev
 
     def _push_event (self, event_name, args):
@@ -84,7 +86,9 @@ class Framework(object):
     def append_event (self, event_name, args):
         '''
         Appends low priority event to the end of the queue
-        '''                
+        '''
+        if args is None:
+            args = self.store_arguments
         self.event_queue.put (Event (event_name, args))
                                    
     def event_to_action (self, event, context):
@@ -110,6 +114,8 @@ class Framework(object):
                 if self.config.print_trace:
                     self.logger.info ('Executing action ' + action.name)
                 action_output = pipeline.get_action(action_name)(action, context)
+                if action_output is not None:
+                    self.store_arguments = action_output
                 if pipeline.get_post_action(action_name)(action, context):
                     if not action.new_event is None:
                         new_args = Arguments() if action_output is None else action_output

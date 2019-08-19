@@ -18,7 +18,8 @@ class Kcwi_pipeline(Base_pipeline):
     """
 
     event_table = {
-        "next_file": ("ingest_file", "file_ingested", "file_ingested"),
+        #"next_file": ("ingest_file", "file_ingested", "file_ingested"),
+        "next_file": ("ingest_file", "file_ingested", None),
         "file_ingested": ("action_planner", None, None),
         # BIAS
         "process_bias": ("process_bias", None, None),
@@ -41,6 +42,8 @@ class Kcwi_pipeline(Base_pipeline):
         "arcs_fit_center": ("fit_center", "fit_center_started", None),
         # FLAT
         "process_flat": ("process_flat", None, None),
+        # General processing
+        "next_file_stop": ("ingest_file", "file_ingested", None)
         #"process_object": ("process_object", None, "save_png"),
         #"save_png": ("save_png", None, None)
     }
