@@ -6,21 +6,12 @@ Test Fits to PNG pipeline with HTTP server.
 @author: skwok
 '''
 
-import sys
-#sys.path.append('/Users/lrizzi/Python_Projects/Framework/prototype')
-import os.path
-import glob
-
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.config.framework_config import ConfigClass
-from keckdrpframework import config
 from keckdrpframework.pipelines.kcwi_pipeline import Kcwi_pipeline
 from keckdrpframework.models.arguments import Arguments
 import subprocess
 import time
-
-
-# Try backported to PY<37 `importlib_resources`.
 import argparse
 
 

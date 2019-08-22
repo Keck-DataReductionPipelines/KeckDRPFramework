@@ -18,8 +18,8 @@ class Kcwi_pipeline(Base_pipeline):
     """
 
     event_table = {
-        #"next_file": ("ingest_file", "file_ingested", "file_ingested"),
         "next_file": ("ingest_file", "file_ingested", None),
+        #"next_file": ("ingest_file", "file_ingested", "file_ingested"),
         "file_ingested": ("action_planner", None, None),
         # BIAS
         "process_bias": ("process_bias", None, None),
