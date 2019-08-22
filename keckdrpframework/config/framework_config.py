@@ -15,6 +15,7 @@ from keckdrpframework.models.event import Event
 #import datetime
 
 import pkg_resources
+import os
 
 class ConfigClass:    
     
@@ -32,7 +33,12 @@ class ConfigClass:
             self.properties.update (defaults)
         if not cgfile is None:
             path = cgfile  # always use slash
-            cgfile = pkg_resources.resource_filename(__name__, path)
+            # try to see if the file is in the current working directory
+            cwd = os.getcwd()
+            if os.path.isfile(os.path.join(cwd, path)):
+                cgfile = os.path.join(cwd, path)
+            else:
+                cgfile = pkg_resources.resource_filename(__name__, path)
             self.read(cgfile)
     
     def getType (self, value):
@@ -85,12 +91,3 @@ class ConfigClass:
 
 if __name__ == "__main__":
     Config = ConfigClass ()
-    #path = 'config/config.cfg'  # always use slash
-    #filepath = pkg_resources.resource_filename(__name__, path)
-    #print(filepath)
-    #Config.read(filepath)
-    #print(Config.__dict__)
-    
-    #print (Config.denoise_sigmas[1])
-    #print (Config.no_event_event)
-    
