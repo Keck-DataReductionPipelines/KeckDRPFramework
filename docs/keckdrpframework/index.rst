@@ -136,6 +136,6 @@ Primitives
 ----------
 
 Reference/API
-=============
+-------------
 
 .. automodapi:: keckdrpframework
