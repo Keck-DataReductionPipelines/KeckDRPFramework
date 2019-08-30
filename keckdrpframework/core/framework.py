@@ -1,8 +1,6 @@
-'''
-Created on Jul 8, 2019
-
-@author: skwok
-'''
+"""
+Basic framework module
+"""
 
 import datetime
 import threading
@@ -33,10 +31,18 @@ import pkg_resources
 
 
 class Framework(object):
-    '''
+    """
     This class implements the core of the framework.
     There are two threads: the event loop and the action loop.
-    '''
+    Attributes
+    ----------
+    config : ConfigClass
+        Instance of ConfigClass that uses the configuration file to create a set of configuration parameters
+    logger : log
+    pipeline : pipeline
+        The pipeline that will be used in the framework
+    context :
+    """
     
     def __init__(self, pipeline, configFile):
         '''
