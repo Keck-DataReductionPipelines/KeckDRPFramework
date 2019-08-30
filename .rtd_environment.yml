@@ -1,0 +1,9 @@
+name: keckdrpframework
+
+dependencies:
+    - python=>3
+    - astropy
+    - Cython
+    - bokeh
+    - numpy
+    - requests
