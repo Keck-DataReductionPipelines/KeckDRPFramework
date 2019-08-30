@@ -1,14 +1,46 @@
-Keck DRP Framework
-==================
+********************************
+Keck DRP Framework Documentation
+********************************
+
+This is the documentation for Keck Data Reduction Pipeline Framework package (KDRPF).
+
+KDRPF is a general framework capable of running data reduction pipelines developed specifically
+for Keck instruments, but it can be used to run any type of data reduction pipelines.
+
+It has been developed by the WMKO Data Reduction Project.
+
+This document shows how to install the package, describes the key concepts behind the framework,
+and shows the steps necessary to run or develop a pipeline.
+
+Requirements
+============
+
+KDRPF has the following requirements:
+
+- `Astropy`
+- `Bokeh`
+
+Installation
+============
+You can download the code by cloning this repository::
+
+  git clone https://github.com/Keck-DataReductionPipelines/KeckDRPFramework.git
+
+Change directory into the KeckDRPF directory and run::
+
+  python setup.py install
 
 
+Framework design and concepts
+=============================
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
 
-  keckdrpframework/index.rst
+  keckdrpframework/primitives.rst
+  keckdrpframework/arguments.rst
 
-.. note:: The layout of this directory is simply a suggestion.  To follow
-          traditional practice, do *not* edit this page, but instead place
-          all documentation for the package inside ``keckdrpframework/``.
-          You can follow this practice or choose your own layout.
+Reference/API
+=============
+
+.. automodapi:: keckdrpframework
