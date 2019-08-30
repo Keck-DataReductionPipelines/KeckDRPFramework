@@ -28,14 +28,14 @@ and the ``_perform`` methods.
 An example of a primitive defined this way is a simple FITS reader::
 
  def open_nowarning (filename):
-     with warnings.catch_warnings():
-           warnings.simplefilter('ignore', AstropyWarning)˜
-           return pf.open(filename)
+    with warnings.catch_warnings():
+       warnings.simplefilter('ignore', AstropyWarning)
+       eturn pf.open(filename)
 
  class simple_fits_reader (Base_primitive):
-     '''
+     """
      classdocs
-     '''
+     """
 
      def __init__(self, action, context):
         '''
