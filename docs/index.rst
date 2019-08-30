@@ -1,7 +1,6 @@
-Documentation
-=============
+Keck DRP Framework
+==================
 
-This is the documentation for KeckDRPFramework.
 
 
 .. toctree::
