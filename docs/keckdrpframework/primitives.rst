@@ -6,6 +6,9 @@ An example of a primitive would be a function that subtract the bias level from 
 
 Primitives can be defined in a number of different ways.
 
+Primitives as classes
+^^^^^^^^^^^^^^^^^^^^^
+
 The best way to define a primitive is by subclassing the ``Base_primitive`` class, which contains a number of useful
 methods. In its full implementation, the ``Base_primitive`` class contains the following methods:
 
@@ -63,5 +66,18 @@ the use of arguments in the following section.
 If the standard class is used to define a primitive, note that the ``__init__`` method should initialize the ``Base_primitive`` as well. The example above
 (the simple FITS reader) shows how to do that, and can be copied and pasted exactly as it is. We will return on the concept of ``action`` and ``context``
 later in this document.
+
+Note that once the class is defined, it must be made available to the pipeline. This means that the class must be defined
+in a module or library or regular Python file that can be imported. See the paragraph about directory structure
+for a suggestion on the proper location for primitives.
+
+Primitives as functions
+^^^^^^^^^^^^^^^^^^^^^^^
+For simple operations, functions can be used to define primitives instead of classes. In this case, there are
+no fixed rules as to how the arguments are passed to the function. Functions can be defined directly within the
+definition of a pipeline (see pagraph about pipelines) or in their own file, as long as the file can be imported and
+the function added to the namespace.
+
+
 
 

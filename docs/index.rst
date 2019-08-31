@@ -39,6 +39,7 @@ Framework design and concepts
 
   keckdrpframework/primitives.rst
   keckdrpframework/arguments.rst
+  keckdrpframework/pipelines.rst
 
 Reference/API
 =============
