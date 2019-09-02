@@ -18,7 +18,6 @@ Requirements
 KDRPF has the following requirements:
 
 - `Astropy`
-- `Bokeh`
 
 Installation
 ============
@@ -41,14 +40,8 @@ Framework design and concepts
   keckdrpframework/arguments.rst
   keckdrpframework/pipelines.rst
   keckdrpframework/events_actions.rst
-<<<<<<< HEAD
-<<<<<<< HEAD
   keckdrpframework/framework.rst
-=======
->>>>>>> new docs
-=======
-  keckdrpframework/framework.rst
->>>>>>> adding documentation
+  keckdrpframework/plotting_bokeh.rst
 
 Reference/API
 =============
