@@ -40,6 +40,7 @@ Framework design and concepts
   keckdrpframework/primitives.rst
   keckdrpframework/arguments.rst
   keckdrpframework/pipelines.rst
+  keckdrpframework/events_actions.rst
 
 Reference/API
 =============
