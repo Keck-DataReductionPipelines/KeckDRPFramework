@@ -48,4 +48,3 @@ The actual execution depends on how the function was declared, but in the most g
 would look for ``pre`` and ``post`` conditions and run the ``apply`` method if it is defined.
 
 
-
