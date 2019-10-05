@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import io
 
 from keckdrpframework.utils.easyHTTP import EasyHTTPHandler, EasyHTTPServer, EasyHTTPServerThreaded
-#from utils.try_wrapper import tryEx
+# from utils.try_wrapper import tryEx
 
 from keckdrpframework.models.arguments import Arguments
 
@@ -55,7 +55,7 @@ class DRPF_server_handler (EasyHTTPHandler):
         self._getParameters(qstr)
         print(self.__dict__)
         name = self._http_name
-        action= self._http_action
+        action = self._http_action
         state = self._http_state
         next = self._http_next
         print("updating event_table")
@@ -65,8 +65,6 @@ class DRPF_server_handler (EasyHTTPHandler):
     def get_event_table(self, req, qstr):
         print(self.DRPFramework.pipeline.event_table)
         return json.dumps("OK"), self.jsonText
-
-
 
     def get_pending_events (self, req, qstr):
         self._getParameters(qstr)
@@ -93,11 +91,11 @@ class DRPF_server_handler (EasyHTTPHandler):
         h, w = imgData.shape
         imgOut = io.BytesIO()
         dpi = 100
-        fig = plt.figure(figsize=(w/dpi, h/dpi), dpi=dpi)
+        fig = plt.figure(figsize=(w / dpi, h / dpi), dpi=dpi)
         fig.subplots_adjust (left=0, right=1, bottom=0, top=1)
         
         hEq = hist_equal2d (None, self.DRPFramework.context)
-        img = hEq._applyAHEC(imgData).reshape((h,w))
+        img = hEq._applyAHEC(imgData).reshape((h, w))
         
         plt.imshow(img, origin='lower', cmap='gray')
 
@@ -121,7 +119,7 @@ class DRPF_server_handler (EasyHTTPHandler):
         self.wfile.write (imgData)
         self.wfile.flush()
         
-    #def serveFile (self, req, qstr):
+    # def serveFile (self, req, qstr):
     #    print ("serveFile", req, qstr)
     #    if ".fits" in req:
     #        self._getParameters(qstr)
@@ -145,7 +143,7 @@ def start_http_server (fw, config, logger):
     hostname = socket.gethostname()
     hostname = '127.0.0.1'
     logger.info ("HTTPD started %s %d" % (socket.gethostbyaddr(socket.gethostbyname(hostname)), port))
-    logger.info ("DocRoot is " +  DRPF_server_handler.DocRoot)
+    logger.info ("DocRoot is " + DRPF_server_handler.DocRoot)
     
     try:
         httpd.serve_forever()

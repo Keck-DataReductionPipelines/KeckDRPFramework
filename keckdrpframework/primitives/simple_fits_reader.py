@@ -8,8 +8,8 @@ import astropy.io.fits as pf
 from astropy.utils.exceptions import AstropyWarning
 import warnings
 
-from models.arguments import Arguments
-from primitives.base_primitive import Base_primitive
+from keckdrpframework.models.arguments import Arguments
+from keckdrpframework.primitives.base_primitive import Base_primitive
 
 def open_nowarning (filename):
     with warnings.catch_warnings():

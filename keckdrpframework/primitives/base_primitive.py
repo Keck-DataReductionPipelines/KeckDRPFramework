@@ -1,4 +1,4 @@
-'''
+"""
 Created on Jul 8, 2019
 
 A primitive should have:
@@ -25,7 +25,7 @@ Recipes use apply()
         
         
 @author: skwok
-'''
+"""
 
 class Base_primitive:
     """
@@ -33,9 +33,9 @@ class Base_primitive:
     """
 
     def __init__(self, action, context):
-        '''
+        """
         Constructor
-        '''
+        """
         self.action = action
         self.context = context
         self.output = None

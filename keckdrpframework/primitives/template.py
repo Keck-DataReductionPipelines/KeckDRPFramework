@@ -1,20 +1,20 @@
-'''
+"""
 Created on Jul 8, 2019
                 
 @author: skwok
-'''
+"""
 
-from primitives.base_primitive import Base_primitive
+from keckdrpframework.primitives.base_primitive import Base_primitive
 
 class Template(Base_primitive):
-    '''
+    """
     classdocs
-    '''
+    """
 
     def __init__(self, action, context):
-        '''
+        """
         Constructor
-        '''    
+        """    
         Base_primitive.__init__(self, action, context)
         
         

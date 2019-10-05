@@ -4,14 +4,14 @@ Created on Jul 31, 2019
 @author: skwok
 """
 
-from primitives.base_primitive import Base_primitive
-from primitives.base_img import Base_img
-from models.arguments import Arguments
+from keckdrpframework.primitives.base_primitive import Base_primitive
+from keckdrpframework.primitives.base_img import Base_img
+from keckdrpframework.models.arguments import Arguments
 
-from primitives.hist_equal2d import hist_equal2d
-from primitives.simple_fits_reader import simple_fits_reader
-from primitives.save_png import save_png
-from primitives.noise_removal import noise_removal
+from keckdrpframework.primitives.hist_equal2d import hist_equal2d
+from keckdrpframework.primitives.simple_fits_reader import simple_fits_reader
+from keckdrpframework.primitives.save_png import save_png
+from keckdrpframework.primitives.noise_removal import noise_removal
 
 class base_ccd_primitive (Base_img):
 

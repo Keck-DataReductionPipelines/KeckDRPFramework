@@ -8,11 +8,10 @@ To do:
     Read parameters from file.
     
 
-@author: shkwok
+@author: skwok
 '''
 
 from keckdrpframework.models.event import Event
-#import datetime
 
 import pkg_resources
 import os
@@ -31,15 +30,18 @@ class ConfigClass:
         
         if not defaults is None:
             self.properties.update (defaults)
-        if not cgfile is None:
-            path = cgfile  # always use slash
+        if not cgfile is None:            
             # try to see if the file is in the current working directory
-            cwd = os.getcwd()
-            if os.path.isfile(os.path.join(cwd, path)):
-                cgfile = os.path.join(cwd, path)
+            if os.path.isfile(cgfile):
+                fullpath = cgfile
             else:
-                cgfile = pkg_resources.resource_filename(__name__, path)
-            self.read(cgfile)
+                cwd = os.getcwd()
+                fullpath = os.path.join(cwd, cgfile)
+                if not os.path.isfile(fullpath):
+                    fullpath = pkg_resources.resource_filename(__name__, cgfile)
+                if not os.path.isfile(fullpath):
+                    return
+            self.read(fullpath)
     
     def getType (self, value):
         value = value.strip()
@@ -65,29 +67,37 @@ class ConfigClass:
         except:
             return value
         
-    def read (self, fname):        
-        with open(fname, 'r') as fh:
-            props = self.properties
-            for line in fh:
-                line = line.strip()
-                if len(line) < 1: continue
-                try:
-                    idx = line.index("#")
-                    line = line[:idx]
-                except:
-                    pass
-                if len(line) < 1: continue
-                parts = line.split('=')
-                if len(parts) > 1:
-                    key, val = parts
-                    key = key.strip()
-                    val = val.strip()
-                    props[key] = self.getType (val)
-            return
-        raise Exception("Failed to read configuration file " + fname)
+    def read (self, fname):
+        try:        
+            with open(fname, 'r') as fh:
+                props = self.properties
+                for line in fh:
+                    line = line.strip()
+                    if len(line) < 1: continue
+                    try:
+                        idx = line.index("#")
+                        line = line[:idx]
+                    except:
+                        pass
+                    if len(line) < 1: continue
+                    parts = line.split('=')
+                    if len(parts) > 1:
+                        key, val = parts
+                        key = key.strip()
+                        val = val.strip()
+                        props[key] = self.getType (val)
+                return
+        except:
+            raise Exception("Failed to read configuration file " + fname)
 
     def __getattr__ (self, key):
         return self.properties[key]
+    
+    def get (self, key, defValue):
+        val = self.properties.get(key)
+        if val is None:
+            return defValue
+        return val
 
 if __name__ == "__main__":
     Config = ConfigClass ()

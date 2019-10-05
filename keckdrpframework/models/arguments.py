@@ -17,4 +17,4 @@ class Arguments(object):
         out = []
         for k, v in self.__dict__.items():
             out.append (f"{k}: {v}")
-        return ",".join (out)
+        return ", ".join (out)
