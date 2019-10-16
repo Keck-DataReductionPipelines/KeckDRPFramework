@@ -24,7 +24,7 @@ cd ..
 
 mkdir -p $NEWNAME
 mkdir -p $NEWNAME/${NEWNAME}_pipelines
-cp templates/logger.cfg README.md $NEWNAME
+cp templates/logger.cfg templates/README.md $NEWNAME
 
 changeOneFile $NEWNAME templates/template_pipelines/template_pipeline.py ${NEWNAME}/${NEWNAME}_pipelines/${NEWNAME}_pipeline.py
 changeOneFile $NEWNAME templates/runTest_template.sh ${NEWNAME}/runTest_${NEWNAME}.sh 
