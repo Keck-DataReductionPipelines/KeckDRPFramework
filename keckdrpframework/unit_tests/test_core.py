@@ -12,9 +12,10 @@ from keckdrpframework.models.data_set import Data_set
 
 from keckdrpframework.utils.DRPF_logger import getLogger
 from keckdrpframework.config.framework_config import ConfigClass
-from keckdrpframework.core.queues import Simple_event_queue, start_queue_manager, get_event_queue, Queue_server, _get_queue_manager
+from keckdrpframework.core.queues import Simple_event_queue, get_event_queue, Queue_server, _get_queue_manager, _queue_manager_target
 
 import time
+import multiprocessing
 
 #
 # Test queues
@@ -40,9 +41,13 @@ def test_simple_queue ():
     
 
 def test_start_queue_server ():    
+    def proc ():
+        _queue_manager_target (QueueHost, QueuePortNr, QueueAuthCode)    
+
     # Start Queue manager process, which will host the shared queue
-    proc = start_queue_manager (QueueHost, QueuePortNr, QueueAuthCode)    
-    assert proc is not None, "Could not create Queue manager"
+    proc = multiprocessing.Process(target=proc)
+    proc.start()
+    assert proc is not None, "Could not create queue manager"
     
 def test_shared_queue_producer ():    
     # Append items to the shared queue    
