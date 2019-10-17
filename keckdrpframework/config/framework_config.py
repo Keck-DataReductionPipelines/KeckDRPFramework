@@ -20,7 +20,7 @@ class ConfigClass:
     
     def __init__ (self, cgfile=None, defaults=None):
         self.properties = {
-            "logger_config_file" : "logger.conf",
+            "logger_config_file" : "logger.cfg",
             "monitor_interval" : 10, 
             "output_directory": "output",
             "temp_directory": "temp", 
