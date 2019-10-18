@@ -79,10 +79,12 @@ class Framework(object):
         if pipeline is None:
             raise Exception ("Failed to initialize pipeline")
           
-        pipeline.set_logger (self.logger)
-        
-        self.pipeline = pipeline
         self.context = Processing_context (self.event_queue, self.event_queue_hi, self.logger, self.config)
+        pipeline.set_logger (self.logger)
+        pipeline.set_context (self.context)
+        self.pipeline = pipeline
+        
+        
         self.keep_going = True
         self.init_signal ()
         self.store_arguments = Arguments()
@@ -324,7 +326,7 @@ class Framework(object):
         if files is not None:
             for f in files:
                 ds.append_item(f)
-    
+        
         for ditem in ds.data_table.index:
             self.event_queue.put(Event ("next_file", Arguments(name=ditem)))
             
@@ -362,6 +364,7 @@ def find_pipeline (pipeline_name, prefixes, logger):
             klass = getattr (module, pipeline_name)
             return klass ()
         except ModuleNotFoundError as me:
+            print ("Failed", full_name, me)
             continue
         except Exception as e:            
             logger.info("Exception " + e)
