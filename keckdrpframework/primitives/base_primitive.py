@@ -63,5 +63,3 @@ class Base_primitive:
         Makes objects of this calls callable.
         """
         return self.apply()
-            
-        

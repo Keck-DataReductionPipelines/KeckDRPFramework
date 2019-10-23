@@ -1365,3 +1365,7 @@
 2019-10-04 16:32:01:DRPF:INFO: Action save_png done
 2019-10-04 16:32:02:DRPF:INFO: No new events - do nothing
 2019-10-04 16:32:02:DRPF:INFO: No pending events or actions, terminating
+2019-10-22 11:49:18:DRPF:INFO: Framework initialized
+2019-10-22 11:49:18:DRPF:INFO: Framework main loop started
+2019-10-22 11:49:19:DRPF:INFO: No new events - do nothing
+2019-10-22 11:49:19:DRPF:INFO: No pending events or actions, terminating

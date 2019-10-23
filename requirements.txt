@@ -2,3 +2,6 @@ astropy-helpers
 sphinx
 gitpython
 sphinx-astropy
+astropy
+pandas
+bokeh
