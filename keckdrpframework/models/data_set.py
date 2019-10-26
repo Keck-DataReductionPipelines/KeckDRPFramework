@@ -110,7 +110,7 @@ class Data_set:
             dir_state = os.stat(self.dir_name)
             curr_time = dir_state.st_mtime
             if curr_time > last_time:
-                self.update_date_set ()
+                self.update_data_set ()
                 last_time = curr_time
             time.sleep (self.monitor_interval)
             if self.must_stop:
