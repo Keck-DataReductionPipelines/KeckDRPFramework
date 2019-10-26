@@ -83,8 +83,7 @@ class Framework(object):
         pipeline.set_logger (self.logger)
         pipeline.set_context (self.context)
         self.pipeline = pipeline
-        
-        
+                
         self.keep_going = True
         self.init_signal ()
         self.store_arguments = Arguments()
@@ -347,14 +346,14 @@ class Framework(object):
                 self._start()
                 self.logger.info("Framework main loop started")
                 self.waitForEver()
-            
-            
+                        
         
 
 def find_pipeline (pipeline_name, prefixes, logger):
     """
     Finds the class called pipeline_name and instantiates an object of that class.
     """    
+    klass = None
     for p in prefixes:
         try: 
             full_name = pipeline_name
@@ -362,18 +361,40 @@ def find_pipeline (pipeline_name, prefixes, logger):
                 full_name = f"{p}.{pipeline_name}"
             module = importlib.import_module(full_name)
             klass = getattr (module, pipeline_name)
-            return klass ()
+            if klass is not None:
+                break
         except ModuleNotFoundError as me:
-            print ("Failed", full_name, me)
+            print ("Failed loading pipeline", full_name, me)
             continue
         except Exception as e:            
             logger.info("Exception " + e)
             break
-        
+    
+    if klass is not None:
+        return klass ()
+            
     logger.error(f"Could not find pipeline {pipeline_name} in {prefixes}")
            
-    return None
+    return None    
+
+def create_context (event_queue=None, event_queue_hi=None, logger=None, config=None):
+    """
+    Convenient function to create a context for working withtout the framework.
+    Useful in Jupyter notebooks for example.
     
-    
+    """
+    if config is None:
+        config = ConfigClass ()
+        
+    if logger is None:
+        logger = getLogger (config.logger_config_file, name="DRPF")
+                   
+    if event_queue_hi is None:
+        event_queue_hi = queues.Simple_event_queue()
+        
+    if event_queue is None:        
+        event_queue = queues.Simple_event_queue()        
+
+    return Processing_context (event_queue, event_queue_hi, logger, config)
     
     
