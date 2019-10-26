@@ -26,7 +26,10 @@ class ConfigClass:
             "temp_directory": "temp", 
             "http_server_port": 50100,
             "doc_root": ".",
-            "file_type": "*.fits"}
+            "file_type": "*.fits",
+            "pipeline_path": ("", "pipelines"),
+            "primitive_path": ("", "primitives"),
+            }
         
         if not defaults is None:
             self.properties.update (defaults)
