@@ -5,7 +5,9 @@ Prototype framework for DRPs at Keck
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
-
+.. image:: https://readthedocs.org/projects/keckdrpframework/badge/?version=latest
+    :target: https://keckdrpframework.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 
 License
