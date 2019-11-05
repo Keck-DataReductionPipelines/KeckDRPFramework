@@ -12,6 +12,7 @@ import signal
 import traceback
 import time
 import importlib
+import os
 
 from keckdrpframework.core import queues
 
@@ -23,8 +24,8 @@ from keckdrpframework.models.arguments import Arguments
 from keckdrpframework.models.action import Action
 from keckdrpframework.models.event import Event
 from keckdrpframework.models.data_set import Data_set
+from keckdrpframework.pipelines.base_pipeline import Base_pipeline
 from keckdrpframework.utils.DRPF_logger import getLogger
-
 from keckdrpframework.config.framework_config import ConfigClass
 
 
@@ -63,8 +64,12 @@ class Framework(object):
         
         Creates the event_queue and the action queue
         """
-        
-        self.config = ConfigClass (configFile)
+
+        if isinstance(configFile, str):
+            self.config = ConfigClass(configFile)
+        else:
+            self.config = configFile
+
         self.logger = getLogger (self.config.logger_config_file, name="DRPF")
         
         self.wait_for_event = False
@@ -73,12 +78,15 @@ class Framework(object):
         
         # The regular event queue can be local or shared via proxy manager
         self.queue_manager = None
-        self.event_queue = self._get_event_queue ()        
-        
-        pipeline = find_pipeline (pipeline_name, self.config.pipeline_path, self.logger)      
+        self.event_queue = self._get_event_queue ()
+
+        if isinstance(pipeline_name, str):
+            pipeline = find_pipeline (pipeline_name, self.config.pipeline_path, self.logger)
+        else:
+            pipeline = pipeline_name()
         if pipeline is None:
-            raise Exception ("Failed to initialize pipeline")
-          
+            raise Exception("Failed to initialize pipeline")
+
         pipeline.set_logger (self.logger)
         
         self.pipeline = pipeline
@@ -346,8 +354,6 @@ class Framework(object):
                 self.logger.info("Framework main loop started")
                 self.waitForEver()
             
-            
-        
 
 def find_pipeline (pipeline_name, prefixes, logger):
     """
@@ -370,7 +376,3 @@ def find_pipeline (pipeline_name, prefixes, logger):
     logger.error(f"Could not find pipeline {pipeline_name} in {prefixes}")
            
     return None
-    
-    
-    
-    
