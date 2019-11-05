@@ -18,7 +18,7 @@ from keckdrpframework.models.arguments import Arguments
 
 def _parseArguments(in_args): 
     description = "Test harness for Keck DRP Framework"
-    usage = "\n{} pipeline config_file [-w] [-W] [-s] [-i] [-f file [files ...]]|[-d dirname]\n".format(in_args[0])
+    usage = "\n{} pipeline config_file [-w] [-W] [-s] [-i] [file [files ...]]|[-d dirname]\n".format(in_args[0])
     epilog = "\nRuns the given pipeline using the given configuration\n"
     
     parser = argparse.ArgumentParser (prog=f"{in_args[0]}", description=description, usage=usage, epilog=epilog)

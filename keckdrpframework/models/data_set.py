@@ -38,7 +38,7 @@ class Data_set:
     def digest_new_item (self, filename):
         """
         Returns the information to be stored.
-        In this case, the information is simply the FITS header, assuming filename refres to a FITS.
+        In this case, the information is simply the FITS header, assuming filename refers to a FITS.
         In case this class is sub-classed to handle other types of data, 
         the returned format must be a pd.Series with names and values.
         The Series will have a name = filename. 
@@ -79,8 +79,14 @@ class Data_set:
         flist = sorted (flist)
         for f in flist:
             self.append_item(f)
-            
-    def getInfo (self, index, column):
+    
+    def getInfo (self, index):
+        """
+        Retrieves the row [index]        
+        """
+        return self.data_table.loc[index]
+    
+    def getInfoColumn (self, index, column):
         """
         Retrieves and returns data stored in the data_table.
         index is the name used to append this data.
@@ -104,7 +110,7 @@ class Data_set:
             dir_state = os.stat(self.dir_name)
             curr_time = dir_state.st_mtime
             if curr_time > last_time:
-                self.update_date_set ()
+                self.update_data_set ()
                 last_time = curr_time
             time.sleep (self.monitor_interval)
             if self.must_stop:

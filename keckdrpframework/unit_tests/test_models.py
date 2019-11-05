@@ -72,7 +72,7 @@ def init_data_set ():
     
 def test_data_set_1 (init_data_set):
     """
-    Creattion
+    Creation
     """      
     data_set = init_data_set   
     assert data_set is not None, "Could not create data set"
@@ -81,6 +81,15 @@ def test_data_set_start (init_data_set):
     data_set = init_data_set    
     data_set.start_monitor()
     
+def test_data_set_get_info (init_data_set):
+    data_set = init_data_set
+    
+    fname0 = data_set.data_table.index[0]
+    info0 = data_set.getInfo (fname0)
+    targname0 = info0.get("TARGNAME")
+    
+    targname1 = data_set.getInfoColumn (fname0, "TARGNAME")
+    assert targname0 == targname1, "Target names do not match"
         
 def test_data_set_stop (init_data_set):    
     data_set = init_data_set        

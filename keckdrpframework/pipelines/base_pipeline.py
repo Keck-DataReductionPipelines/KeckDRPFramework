@@ -38,6 +38,9 @@ class Base_pipeline:
     def set_logger (self, lger):
         self.logger = lger
         
+    def set_context (self, context):
+        self.context = context
+        
     def not_found (self, name):
         """
         When no action is found, this method builds a dummy function that 
@@ -47,7 +50,7 @@ class Base_pipeline:
         def f (action, context, **kargs):
             return Arguments(kargs=kargs, not_found=name)
 
-        self.logger.info(f"Action not found {name}")
+        self.logger.warn(f"Action not found {name}")
         return f
     
     def _get_action_apply_method (self, klass):
@@ -66,48 +69,76 @@ class Base_pipeline:
         module_name is same as file name.
         For example: class abc is defined in primitives.abc.
         """ 
-        prefixes = "primitives", "keckdrpframework", "keckdrpframework.primitives", ""
-        for p in prefixes:  
+        def get_apply_method (mod_prefix, name):
+            mod = importlib.import_module(mod_prefix)   
+            self.context.logger.info ("importing mod " +  mod_prefix)                     
+            return self._get_action_apply_method(getattr (mod, name))
+            
+        prefixes = self.context.config.primitive_path
+        parts = module_name.split('.')
+        if len(parts) > 0:
+            lastPart = parts[-1]
+        else:
+            # module name and class name are the same
+            lastPart = module_name 
+             
+        for p in prefixes: 
+            if p:
+                full_name = f"{p}.{module_name}"
+            else:
+                full_name = module_name
             try:
-                if p:
-                    full_name = f"{p}.{module_name.lower()}"
-                else:
-                    full_name = module_name.lower()
-                mod = importlib.import_module(full_name)        
-                return self._get_action_apply_method(getattr (mod, module_name))  
-            except Exception as e:
+                return get_apply_method (full_name, lastPart)
+            except Exception as e:                
                 pass
+                
+            if p:
+                full_name = f"{p}.{module_name.lower()}"
+            else:
+                full_name = module_name.lower ()
+            try:
+                return get_apply_method (full_name, lastPart.lower())
+            except Exception as e:                
+                pass            
         raise Exception("Not found")      
     
     def _get_action (self, prefix, action):  
         """
         Returns a function for the given action name or true() if not found
-        """      
-        name = prefix + action
-        
-        try:
-            # Is this name defined ?
-            fn = getattr (sys.modules[self.__module__], name)
+        """
+        parts = action.split ('.')
+        if len(parts) == 1:
+            name = prefix + action
             
-            # Name is defined, is it a class, convert it into a function
-            if isinstance (fn, type):
-                return self._get_action_apply_method(fn)
-            # name is a function, return it
-            return fn
-        except Exception as e1:
-            pass
+            try:
+                # Is this name defined ?
+                fn = getattr (sys.modules[self.__module__], name)
+                
+                # Name is defined, is it a class, convert it into a function
+                if isinstance (fn, type):
+                    return self._get_action_apply_method(fn)
+                # name is a function, return it
+                return fn
+            except Exception as e1:
+                #print ("  name define ?", e1, name)
+                pass
+            
+            try:
+                # Checks if method defined in the class
+                return self.__getattribute__ (name)
+            except Exception as e2:
+                #print ("in class ? ", e2, name)        
+                pass
         
-        try:
-            # Checks if method defined in the class
-            return self.__getattribute__ (name)
-        except Exception as e2:
-            pass
-    
-        try:
-            # Tries to look in the 'primitives' package
-            return self._find_import_action (name)
-        except Exception as e3:
-            pass
+        # Action is a class
+        if len(prefix) == 0:
+            # pre, post conditions are implemented inside the class
+            try:
+                # Tries a search
+                return self._find_import_action (action)
+            except Exception as e3:
+                pass
+        
         
         # Could not find the name for this action
         return None        
@@ -131,15 +162,16 @@ class Base_pipeline:
         return f
     
     def noop (self, action, context):
-        self.logger.info ("NOOP action")
+        #self.logger.info ("NOOP action")
+        return action.args
         
     def info (self, action, context):
         pending_events = context.event_queue.get_pending()
         self.logger.info ("Pending events " + str(pending_events))
     
     def no_more_action (self, action, context):
-        self.logger.info ("No more action, terminating")
-        
+        self.logger.info ("No more action, terminating")        
+   
     def echo (self, action, context):
         """
         Test action 'echo'
@@ -155,9 +187,11 @@ class Base_pipeline:
     def _event_to_action (self, event, context):
         """
         Returns the event_info as (action, state, next_event)
-        """
-        noop_event = self.event_table0.get("noop")
-        event_info = self.event_table0.get(event.name, noop_event)
+        """   
+        event_info = self.event_table0.get(event.name)
+        if event_info is None:
+            self.logger.warn (f"Event {event.name} not found ")
+            event_info = self.event_table0.get("noop")
         return event_info
     
     def event_to_action (self, event, context):
