@@ -70,8 +70,9 @@ class Base_pipeline:
         For example: class abc is defined in primitives.abc.
         """ 
         def get_apply_method (mod_prefix, name):
-            mod = importlib.import_module(mod_prefix)   
-            self.context.logger.info ("importing mod " +  mod_prefix)                     
+            mod = importlib.import_module(mod_prefix)
+            if self.context.debug:   
+                self.context.logger.info (f"Importing mod {mod_prefix}, name {name}")                     
             return self._get_action_apply_method(getattr (mod, name))
             
         prefixes = self.context.config.primitive_path
@@ -89,7 +90,9 @@ class Base_pipeline:
                 full_name = module_name
             try:
                 return get_apply_method (full_name, lastPart)
-            except Exception as e:                
+            except Exception as e: 
+                if self.context.debug:
+                    self.logger.warn (f"Exception while importing {p}, {e}")
                 pass
                 
             if p:
@@ -98,9 +101,11 @@ class Base_pipeline:
                 full_name = module_name.lower ()
             try:
                 return get_apply_method (full_name, lastPart.lower())
-            except Exception as e:                
-                pass            
-        raise Exception("Not found")      
+            except Exception as e:
+               if self.context.debug:
+                     self.logger.warn (f"Exception while importing (lower case) {p}, {e}")            
+               pass            
+        #raise Exception("Not found")      
     
     def _get_action (self, prefix, action):  
         """
@@ -120,14 +125,16 @@ class Base_pipeline:
                 # name is a function, return it
                 return fn
             except Exception as e1:
-                #print ("  name define ?", e1, name)
+                if self.context.debug:
+                    self.logger.warn (f"Name {name} not defined ? {e1}")
                 pass
             
             try:
                 # Checks if method defined in the class
                 return self.__getattribute__ (name)
             except Exception as e2:
-                #print ("in class ? ", e2, name)        
+                if self.context.debug:
+                    self.logger.warn (f"Name in {name} class ? {e2}") 
                 pass
         
         # Action is a class
@@ -137,6 +144,8 @@ class Base_pipeline:
                 # Tries a search
                 return self._find_import_action (action)
             except Exception as e3:
+                if self.context.debug:
+                    self.logger.warn (f"Could not find {name}, {e3}") 
                 pass
         
         

@@ -13,7 +13,7 @@ Created on Jul 8, 2019
 @author: skwok
 """
 
-from pipelines.base_pipeline import Base_pipeline
+from keckdrpframework.pipelines.base_pipeline import Base_pipeline
 
 from keckdrpframework.primitives.create_contact_sheet_HTML import create_contact_sheet_HTML
 

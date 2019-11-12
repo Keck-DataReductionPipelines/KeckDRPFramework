@@ -12,6 +12,7 @@ import signal
 import traceback
 import time
 import importlib
+import sys
 
 from keckdrpframework.core import queues
 
@@ -51,6 +52,7 @@ class Framework(object):
     logger : log
     
     pipeline : pipeline
+        pipeline can be a string, a module, a class or an object of subclass base_pipeline
         The pipeline that will be used in the framework
         
     context :
@@ -63,8 +65,10 @@ class Framework(object):
         
         Creates the event_queue and the action queue
         """
-        
-        self.config = ConfigClass (configFile)
+        if configFile is None or isinstance(configFile, type("")):
+            self.config = ConfigClass (configFile)
+        else:
+            self.config = configFile
         self.logger = getLogger (self.config.logger_config_file, name="DRPF")
         
         self.wait_for_event = False
@@ -75,7 +79,8 @@ class Framework(object):
         self.queue_manager = None
         self.event_queue = self._get_event_queue ()        
         
-        pipeline = find_pipeline (pipeline_name, self.config.pipeline_path, self.logger)      
+        
+        pipeline = find_pipeline (pipeline_name, self.config.pipeline_path, self.logger)
         if pipeline is None:
             raise Exception ("Failed to initialize pipeline")
           
@@ -352,7 +357,21 @@ class Framework(object):
 def find_pipeline (pipeline_name, prefixes, logger):
     """
     Finds the class called pipeline_name and instantiates an object of that class.
-    """    
+    """
+    if not isinstance (pipeline_name, type("")): # not string
+    
+        if isinstance(pipeline_name, type): # is a class
+            return pipeline_name()
+        elif isinstance (pipeline_name, type(sys)): # is a module
+            m_name = pipeline_name.__name__.split(".")[-1]
+            klass = getattr(pipeline_name, m_name)
+            if klass is not None:
+                return klass()
+        elif isinstance (pipeline_name, object): # object
+            return pipeline_name
+        logger.error(f"{pipeline_name} must be a module, a class or a string")
+        return None
+    
     klass = None
     for p in prefixes:
         try: 

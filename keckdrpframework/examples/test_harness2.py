@@ -1,6 +1,11 @@
 """
 Test harness for DRP Framework
 
+Hardwired pipeline: fits2png_pipeline
+
+Import pipeline module and pass it to framework
+pipeline must be imported.
+
 Created on 2019-09-05
 
 @author skwok
@@ -15,15 +20,16 @@ import traceback
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.models.arguments import Arguments
 
+from keckdrpframework.examples.pipelines import fits2png_pipeline
+
 
 def _parseArguments(in_args): 
-    description = "Test harness for Keck DRP Framework"
-    usage = "\n{} pipeline config_file [-w] [-W] [-s] [-i] [file [files ...]]|[-d dirname]\n".format(in_args[0])
+    description = "Test harness2 for Keck DRP Framework"
+    usage = "\n{} config_file [-w] [-W] [-s] [-i] [file [files ...]]|[-d dirname]\n".format(in_args[0])
     epilog = "\nRuns the given pipeline using the given configuration\n"
     
     parser = argparse.ArgumentParser (prog=f"{in_args[0]}", description=description, usage=usage, epilog=epilog)
     
-    parser.add_argument (dest="pipeline_name", type=str, help="Name of the pipeline class")    
     parser.add_argument (dest="config_file", type=str, help="Configuration file")
     parser.add_argument (dest="infiles", help="Input files", nargs="*") 
         
@@ -46,7 +52,6 @@ if __name__ == "__main__":
     args = _parseArguments (sys.argv)
     
     try:
-        pipeline_name = args.pipeline_name
         config = args.config_file
     except Exception as e:
         print (e)
@@ -54,7 +59,17 @@ if __name__ == "__main__":
         sys.exit (1)
     
     try:
-        framework = Framework (pipeline_name, config)        
+        # Framework can accept: string, module, class or object
+        # String:
+        # pn = "fits2png_pipeline"
+        # Module
+        # pn = fits2png_pipeline
+        # Class:
+        # pn = fits2png_pipeline.fits2png_pipeline
+        # Object 
+        # pn = fits2png_pipeline.fits2png_pipeline()
+        pn = fits2png_pipeline.fits2png_pipeline
+        framework = Framework (pn, config)        
     except Exception as e:
         print ("Test harness failed to initialize framework, exiting ...", e)
         traceback.print_exc()

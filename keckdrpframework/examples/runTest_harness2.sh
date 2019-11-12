@@ -1,7 +1,8 @@
 #!/bin/sh
 
 #
-# Script wrapper for test_harness.py
+# Script wrapper for test_harness2.py
+# Hardwired pipeline: fits2png_pipeline
 #
 # Created: 2019-09-30, skwok
 #
@@ -25,7 +26,7 @@ echo $PYTHONPATH
 
 # For example:
 # 
-# sh runTest_harness.sh fits2png_pipeline config.cfg -d ../unit_tests/test_files
+# sh runTest_harness2.sh config.cfg -d ../unit_tests/test_files
 #
 
-python test_harness.py $*
+python test_harness2.py $*

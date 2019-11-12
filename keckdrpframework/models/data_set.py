@@ -15,7 +15,6 @@ import astropy.io.fits as pf
 from astropy.utils.exceptions import AstropyWarning
 import warnings
 
-
 class Data_set:
     """
     Represents the data set
@@ -80,13 +79,13 @@ class Data_set:
         for f in flist:
             self.append_item(f)
     
-    def getInfo (self, index):
+    def get_info (self, index):
         """
         Retrieves the row [index]        
         """
         return self.data_table.loc[index]
     
-    def getInfoColumn (self, index, column):
+    def get_info_column (self, index, column):
         """
         Retrieves and returns data stored in the data_table.
         index is the name used to append this data.
@@ -97,6 +96,12 @@ class Data_set:
         except:
             self.logger.warn("Keyword %s is not available" % str(column))
             return None
+    
+    def set_info_value (self, index, column, value):
+        try:
+            self.data_table.at[index, column] = value
+        except Exception as e:
+            self.logger.warn (f"Failed to set data_table[{index},{columns}] to {value}")
             
     def _loop (self):
         """

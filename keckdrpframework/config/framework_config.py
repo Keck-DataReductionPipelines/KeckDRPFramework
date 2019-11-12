@@ -33,7 +33,7 @@ class ConfigClass:
         
         if not defaults is None:
             self.properties.update (defaults)
-        if not cgfile is None:            
+        if not cgfile is None:
             # try to see if the file is in the current working directory
             if os.path.isfile(cgfile):
                 fullpath = cgfile
@@ -45,7 +45,7 @@ class ConfigClass:
                 if not os.path.isfile(fullpath):
                     return
             self.read(fullpath)
-    
+            
     def getType (self, value):
         value = value.strip()
         try:
