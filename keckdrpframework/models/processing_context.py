@@ -24,7 +24,7 @@ class Processing_context:
         self.event_queue = event_queue
         self.logger = logger
         self.config = config
-        self.data_set = None
+        self.data_set = Data_set(None, logger, config)
         self.debug = False
         
     def push_event (self, event_name, args):
