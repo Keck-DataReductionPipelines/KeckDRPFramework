@@ -231,6 +231,27 @@ class Framework(object):
         This method can be called directly to run in the main thread.
         To run in a thread, use start_action_loop(). 
         """
+        # bokeh server is initialized if needed
+        try:
+            assert self.context.config.enable_bokeh
+            if self.context.config.enable_bokeh is True and self.context.config.plot_level >= 1:
+                from bokeh.client import push_session
+                from bokeh.io import curdoc
+                from bokeh.plotting.figure import figure
+                from bokeh.layouts import column
+                self.context.bokeh_session = push_session(curdoc())
+                p = figure()
+                c = column(children=[p])
+                curdoc().add_root(c)
+                self.context.bokeh_session.show(c)
+            else:
+                self.context.bokeh_session = None
+        except AssertionError:
+            self.context.config.plot_level = 0
+            pass
+        except KeyError:
+            self.context.config.plot_level = 0
+            pass
         while self.keep_going:
             try:    
                 action = ""
