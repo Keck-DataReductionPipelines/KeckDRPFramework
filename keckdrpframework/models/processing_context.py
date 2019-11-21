@@ -5,10 +5,10 @@ Created on Jul 8, 2019
 """
 
 from keckdrpframework.models.event import Event
-from keckdrpframework.models.data_set import Data_set
+from keckdrpframework.models.data_set import DataSet
 
 
-class Processing_context:
+class ProcessingContext:
     """
     The
     """
@@ -26,6 +26,6 @@ class Processing_context:
         self.config = config
         self.data_set = None
         self.debug = False
-        
-    def push_event (self, event_name, args):
-        self.event_queue_hi.put(Event (event_name, args))
+
+    def push_event(self, event_name, args):
+        self.event_queue_hi.put(Event(event_name, args))

@@ -15,7 +15,8 @@ import astropy.io.fits as pf
 from astropy.utils.exceptions import AstropyWarning
 import warnings
 
-class Data_set:
+
+class DataSet:
     """
     Represents the data set
     Content is stored in self.data_table, which is a pandas data frame.
@@ -34,7 +35,7 @@ class Data_set:
         self.file_type = config.file_type
         self.update_data_set()
 
-    def digest_new_item (self, filename):
+    def digest_new_item(self, filename):
         """
         Returns the information to be stored.
         In this case, the information is simply the FITS header, assuming filename refers to a FITS.
@@ -42,29 +43,29 @@ class Data_set:
         the returned format must be a pd.Series with names and values.
         The Series will have a name = filename. 
         """
-        
+
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", AstropyWarning)
-                hdr = pf.getheader(filename)                
+                hdr = pf.getheader(filename)
                 return pd.Series(dict(zip(hdr.keys(), hdr.values())), name=filename)
         except Exception as e:
-            self.logger.error (f"Failed to open file {filename}, {e}")
-        
+            self.logger.error(f"Failed to open file {filename}, {e}")
+
         return None
-    
-    def append_item (self, filename):
+
+    def append_item(self, filename):
         """
         Appends item, if not already exists.
         """
         if filename is not None and os.path.isfile(filename) and not filename in self.data_table.index:
-            row = self.digest_new_item (filename)
+            row = self.digest_new_item(filename)
             if not row is None:
                 short = os.path.basename(filename)
                 self.logger.info(f"Appending {short} data set")
-                self.data_table = self.data_table.append (row)
-        
-    def update_data_set (self):
+                self.data_table = self.data_table.append(row)
+
+    def update_data_set(self):
         """
         Updates the content of this data set.
         Called by loop() when monitoring the directory.
@@ -74,18 +75,18 @@ class Data_set:
             return
         if not os.path.isdir(self.dir_name):
             return
-        flist = glob.glob (self.dir_name + "/" + self.file_type)
-        flist = sorted (flist)
+        flist = glob.glob(self.dir_name + "/" + self.file_type)
+        flist = sorted(flist)
         for f in flist:
             self.append_item(f)
-    
-    def get_info (self, index):
+
+    def get_info(self, index):
         """
         Retrieves the row [index]        
         """
         return self.data_table.loc[index]
-    
-    def get_info_column (self, index, column):
+
+    def get_info_column(self, index, column):
         """
         Retrieves and returns data stored in the data_table.
         index is the name used to append this data.
@@ -96,14 +97,17 @@ class Data_set:
         except:
             self.logger.warn("Keyword %s is not available" % str(column))
             return None
-    
-    def set_info_value (self, index, column, value):
+
+    def get_size(self):
+        return self.data_table.shape[0]
+
+    def set_info_value(self, index, column, value):
         try:
             self.data_table.at[index, column] = value
         except Exception as e:
-            self.logger.warn (f"Failed to set data_table[{index},{columns}] to {value}")
-            
-    def _loop (self):
+            self.logger.warn(f"Failed to set data_table[{index},{columns}] to {value}")
+
+    def _loop(self):
         """
         Waits for changes in the directory, then digests the changes.
         Maybe needs to monitor other events also.
@@ -115,13 +119,13 @@ class Data_set:
             dir_state = os.stat(self.dir_name)
             curr_time = dir_state.st_mtime
             if curr_time > last_time:
-                self.update_data_set ()
+                self.update_data_set()
                 last_time = curr_time
-            time.sleep (self.monitor_interval)
+            time.sleep(self.monitor_interval)
             if self.must_stop:
                 break
-            
-    def start_monitor (self):
+
+    def start_monitor(self):
         """
         Monitors for changes in the given directory.
         
@@ -130,8 +134,6 @@ class Data_set:
         thr = threading.Thread(target=self._loop)
         thr.setDaemon(True)
         thr.start()
-        
-    def stop_monitor (self):
+
+    def stop_monitor(self):
         self.must_stop = True
-
-

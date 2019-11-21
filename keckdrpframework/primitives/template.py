@@ -4,9 +4,10 @@ Created on Jul 8, 2019
 @author: skwok
 """
 
-from keckdrpframework.primitives.base_primitive import Base_primitive
+from keckdrpframework.primitives.base_primitive import BasePrimitive
 
-class Template(Base_primitive):
+
+class Template(BasePprimitive):
     """
     This is a template for primitives, which is usually an action.
     
@@ -21,15 +22,11 @@ class Template(Base_primitive):
     def __init__(self, action, context):
         """
         Constructor
-        """    
-        Base_primitive.__init__(self, action, context)
-        
-        
-    def _perform (self):
+        """
+        BasePrimitive.__init__(self, action, context)
+
+    def _perform(self):
         """
         Returns an Argument() with the parameters that depends on this operation.
         """
-        raise Exception ("Not yet implemented")
-    
-            
-            
+        raise Exception("Not yet implemented")

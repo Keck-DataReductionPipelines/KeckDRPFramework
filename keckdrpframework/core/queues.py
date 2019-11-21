@@ -39,78 +39,82 @@ from multiprocessing.managers import BaseManager
 from multiprocessing import Process
 
 
-class Simple_event_queue (queue.Queue):
+class SimpleEventQueue(queue.Queue):
     """
     Just subclass queue.Queue
     Operations are get() and put()
-    """  
+    """
+
     def __init__(self, *args, **kargs):
         """
         Constructor
         """
         queue.Queue.__init__(self, *args)
-        
-    def get_pending (self):
+
+    def get_pending(self):
         """
         Returns a copy of the queue's content
         """
-        return list (self.queue)
-    
-class Multiproc_event_queue:
+        return list(self.queue)
+
+
+class MultiprocEventQueue:
     """
     This is also a simple queue. 
     This is instantiated when the proxy server is started.
     Clients/consumers should call get_queue() to get the proxy of the queue.
     """
+
     def __init__(self):
         self.queue = queue.Queue()
-        
-    def put (self, value):
-        self.queue.put (value)
-        
-    def get (self, block=True, timeout=0):
+
+    def put(self, value):
+        self.queue.put(value)
+
+    def get(self, block=True, timeout=0):
         return self.queue.get(block=block, timeout=timeout)
-    
-    def qsize (self):
+
+    def qsize(self):
         return self.queue.qsize()
-    
-    def terminate (self):
+
+    def terminate(self):
         os._exit(0)
-        
-        
-class Queue_server (BaseManager): pass
-    
-def _get_queue_manager (hostname, portnr, auth_code):
-    try:    
-        Queue_server.register('get_queue')
-        manager = Queue_server(address=(hostname, portnr), authkey=auth_code)
+
+
+class QueueServer(BaseManager):
+    pass
+
+
+def _get_queue_manager(hostname, portnr, auth_code):
+    try:
+        QueueServer.register("get_queue")
+        manager = QueueServer(address=(hostname, portnr), authkey=auth_code)
         manager.connect()
         return manager
     except:
         return None
 
-def _queue_manager_target (hostname, portnr, auth_code):
+
+def _queue_manager_target(hostname, portnr, auth_code):
     """
     Starts the proxy queue manager process.
     This should be spawn as a process and run in the background.  
     """
     try:
-        queue = Multiproc_event_queue()
-        Queue_server.register ('get_queue', callable=lambda:queue)
-    
-        manager = Queue_server (address=(hostname, portnr), authkey=auth_code)
-        server = manager.get_server()    
-        server.serve_forever ()
-    except Exception as e:
-        print (e, hostname, portnr, auth_code)
-        
-    print ("Queue manager target terminated")
-        
+        queue = MultiprocEventQueue()
+        QueueServer.register("get_queue", callable=lambda: queue)
 
-def get_event_queue (hostname, portnr, auth_code):
-    manager = _get_queue_manager (hostname, portnr, auth_code)
+        manager = QueueServer(address=(hostname, portnr), authkey=auth_code)
+        server = manager.get_server()
+        server.serve_forever()
+    except Exception as e:
+        print(e, hostname, portnr, auth_code)
+
+    print("Queue manager target terminated")
+
+
+def get_event_queue(hostname, portnr, auth_code):
+    manager = _get_queue_manager(hostname, portnr, auth_code)
     if manager is None:
         return None
     return manager.get_queue()
-        
-        

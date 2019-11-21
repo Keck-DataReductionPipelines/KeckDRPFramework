@@ -6,12 +6,13 @@ Created 2019-09-05
 """
 
 import os
-import glob 
+import glob
 
 from keckdrpframework.models.arguments import Arguments
-from keckdrpframework.primitives.base_primitive import Base_primitive
+from keckdrpframework.primitives.base_primitive import BasePrimitive
 
-class Ingest_files(Base_primitive):
+
+class IngestFiles(BasePrimitive):
     """
     Ingest files from a given directory
     """
@@ -19,10 +20,10 @@ class Ingest_files(Base_primitive):
     def __init__(self, action, context):
         """
         Constructor
-        """    
-        Base_primitive.__init__(self, action, context)        
-        
-    def _perform (self):
+        """
+        BasePrimitive.__init__(self, action, context)
+
+    def _perform(self):
         """
         Expects name, extension, associate_event as arguments.
         
@@ -36,12 +37,9 @@ class Ingest_files(Base_primitive):
             flist = glob.glob(path + "/*." + ext)
             for f in flist:
                 args = Arguments(name=f)
-                queue.put(event, args)                 
-        else:        
+                queue.put(event, args)
+        else:
             args = Arguments(name=path)
-            queue.put (event, args)
-        
-        return Argument ()
-    
-            
-            
+            queue.put(event, args)
+
+        return Argument()
