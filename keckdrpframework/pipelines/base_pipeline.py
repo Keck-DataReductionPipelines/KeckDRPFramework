@@ -83,20 +83,20 @@ class BasePipeline:
                     continue
                 out.append(c)
             return "".join(out)
-
+        
         def get_apply_method(mod_prefix, name):
-            mod = importlib.import_module(mod_prefix)
             if self.context.debug:
                 self.context.logger.info(f"Importing mod {mod_prefix}, name {name}")
-            return self._get_action_apply_method(getattr(mod, name))
+            try:
+                mod = importlib.import_module(mod_prefix)
+                if hasattr(mod, name):
+                    return self._get_action_apply_method(getattr(mod, name))
+            except:
+                pass
+            return None
 
         prefixes = self.context.config.primitive_path
-        parts = module_name.split(".")
-        if len(parts) > 0:
-            last_part = parts[-1]
-        else:
-            # module name and class name are the same
-            last_part = module_name
+        last_part = ""
 
         for p in prefixes:
             if p:
@@ -104,20 +104,20 @@ class BasePipeline:
             else:
                 full_name = module_name
 
-            try:
-                return get_apply_method(full_name, to_camel_case(last_part))
-            except:
-                pass
-
-            try:
-                return get_apply_method(full_name, last_part)
-            except Exception as e:
-                if self.context.debug:
-                    self.logger.warn(f"Exception while importing {p}, {e}")
-                pass
-
-        self.logger.error(f"Exception while importing {lastPart} from {prefixes}")
-        # raise Exception("Not found")
+            parts = full_name.split(".")
+            last_part = parts[-1]
+            package_name = ".".join(parts[:-1])
+            
+            method = get_apply_method(full_name, to_camel_case(last_part))
+            if method is not None:
+                return method            
+            
+            method = get_apply_method(package_name, last_part)
+            if method is not None:
+                return method
+            
+        self.logger.error(f"Exception while importing {last_part} from {prefixes}")
+        return None
 
     def _get_action(self, prefix, action):
         """
@@ -128,7 +128,15 @@ class BasePipeline:
             name = prefix + action
 
             try:
-                # Is this name defined ?
+                # Checks if method defined in the class
+                return self.__getattribute__(name)
+            except Exception as e2:
+                if self.context.debug:
+                    self.logger.warn(f"Name in {name} class ? {e2}")
+                
+            
+            # Is this name defined in this module ?
+            if hasattr(sys.modules[self.__module__], name):
                 fn = getattr(sys.modules[self.__module__], name)
 
                 # Name is defined, is it a class, convert it into a function
@@ -136,30 +144,17 @@ class BasePipeline:
                     return self._get_action_apply_method(fn)
                 # name is a function, return it
                 return fn
-            except Exception as e1:
+            else:
                 if self.context.debug:
-                    self.logger.warn(f"Name {name} not defined ? {e1}")
-                pass
-
-            try:
-                # Checks if method defined in the class
-                return self.__getattribute__(name)
-            except Exception as e2:
-                if self.context.debug:
-                    self.logger.warn(f"Name in {name} class ? {e2}")
-                pass
-
+                    self.logger.warn(f"Not defined in module {name}")
+            
         # Action is a class
         if len(prefix) == 0:
             # pre, post conditions are implemented inside the class
-            try:
-                # Tries a search
-                return self._find_import_action(action)
-            except Exception as e3:
-                if self.context.debug:
-                    self.logger.warn(f"Could not find {name}, {e3}")
-                pass
-
+            act_method = self._find_import_action(action)
+            if act_method is not None:
+                return act_method
+                
         # Could not find the name for this action
         return None
 
