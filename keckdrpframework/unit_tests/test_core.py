@@ -47,6 +47,7 @@ def test_start_queue_server():
     # Start Queue manager process, which will host the shared queue
     proc = multiprocessing.Process(target=proc)
     proc.start()
+    time.sleep (2)
     assert proc is not None, "Could not create queue manager"
 
 
@@ -69,7 +70,7 @@ def test_shared_queue_consumer():
     ok = True
     while ok:
         try:
-            item = queue.get(block=False, timeout=1)
+            item = queue.get(block=False, timeout=3)
         except:
             ok = False
             break
@@ -85,6 +86,15 @@ def test_shared_queue_consumer():
 
 
 def test_terminate_queue_manager():
-    manager = _get_queue_manager(QueueHost, QueuePortNr, QueueAuthCode)
+    for i in range (5):
+        manager = _get_queue_manager(QueueHost, QueuePortNr, QueueAuthCode)
+        if manager is not None:
+            try:
+                queue = manager.get_queue()        
+                if queue is not None:
+                    queue.terminate()
+            except:
+                pass
+            time.sleep(3)
 
     assert manager is None, "Terminate failed. Manager still running."
