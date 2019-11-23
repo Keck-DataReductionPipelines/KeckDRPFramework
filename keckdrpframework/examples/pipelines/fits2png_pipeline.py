@@ -25,7 +25,7 @@ class Fits2pngPipeline(BasePipeline):
     """
 
     event_table = {
-        "next_file": ("simple_fits_reader", "file_ready", "file_ready"),
+        "next_file": ("simple_fits_reader.SimpleFitsReader", "file_ready", "file_ready"),
         "file_ready": ("noise_removal", "noise_removed", "noise_removed"),
         "noise_removed": ("hist_equal2d", "histeq_done", "histeq_done"),
         "histeq_done": ("save_png", None, None),
