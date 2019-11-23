@@ -8,8 +8,6 @@ import logging
 import logging.config
 import pkg_resources
 import os
-from astropy.logger import logging_levels
-from astropy.wcs.docstrings import name
 
 
 class DRPFLogger(logging.getLoggerClass()):
