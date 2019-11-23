@@ -402,9 +402,11 @@ def find_pipeline(pipeline_name, prefixes, logger):
             if p:
                 full_name = f"{p}.{pipeline_name}"
             module = importlib.import_module(full_name)
-            klass = getattr(module, to_camel_case(last_name))
-            if klass is not None:
-                break
+            class_name = to_camel_case(last_name)
+            if hasattr(module, class_name):
+                klass = getattr(module, class_name)
+                if klass is not None:
+                    break
         except ModuleNotFoundError as me:
             logger.info(f"Failed loading pipeline {full_name}, {me}")
             continue
