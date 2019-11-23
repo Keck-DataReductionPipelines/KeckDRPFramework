@@ -32,7 +32,7 @@ def test_as_fullpath():
     pipeline is a string
     """
     f = Framework("keckdrpframework.examples.pipelines.fits2png_pipeline.Fits2pngPipeline", None)
-    assert f is not None
+    assert f is not None, "Could not create framework using full path as string"
 
 
 def test_as_modulepath():
@@ -40,7 +40,7 @@ def test_as_modulepath():
     pipeline is a string
     """
     f = Framework("keckdrpframework.examples.pipelines.fits2png_pipeline", None)
-    assert f is not None
+    assert f is not None, "Could not create framework using module path as string"
 
 
 def test_as_module():
@@ -48,7 +48,7 @@ def test_as_module():
     pipeline is an imported module
     """
     f = Framework(fits2png_pipeline, None)
-    assert f is not None
+    assert f is not None, "Could not create framework using module name"
 
 
 def test_as_class1():
@@ -56,7 +56,7 @@ def test_as_class1():
     pipeline is an imported module.class
     """
     f = Framework(Fits2pngPipeline, None)
-    assert f is not None
+    assert f is not None, "Could not create framework using module.class"
 
 
 def test_as_class2():
@@ -67,7 +67,7 @@ def test_as_class2():
     cfg = ConfigClass()
     cl = fits2png_pipeline.Fits2pngPipeline
     f = Framework(cl, cfg)
-    assert f is not None
+    assert f is not None, "Could not create framework using class"
 
 
 def test_as_object():
@@ -76,4 +76,4 @@ def test_as_object():
     """
     obj = fits2png_pipeline.Fits2pngPipeline()
     f = Framework(obj, "../examples/config.cfg")
-    assert f is not None
+    assert f is not None, "Could not create framework using instance of class"
