@@ -1,11 +1,12 @@
 Plotting with Bokeh
 ======================================
 
-Because the framework runs in a thread, it might be diffcult to plot directly with Matplotlib.
+Because the framework runs in a thread, it might be difficult to plot directly with Matplotlib.
 
 A solution is to use Bokeh, which is thread-safe.
 
-An implementation of this solution is offered by the framework using the bokeh_plotting import.
+An implementation of this solution is offered by the framework using the bokeh_plotting module. In this implementation,
+we will run a bokeh server, started up by the initialization script, and then connect to it.
 
 To plot with bokeh, start by adding a special event to your pipeline event table::
 
@@ -61,7 +62,7 @@ This special event can be then triggered immediately by your startup script and 
 Plotting
 ^^^^^^^^
 
-The actual plotting is performed by the primitives.
+The actual plotting is performed by the primitives as needed.
 
 As an example::
 
