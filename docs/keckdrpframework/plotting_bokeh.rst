@@ -54,6 +54,7 @@ The special event is described in a primitive that we will call start_bokeh.py::
          self.context.bokeh_session.show(c)
 
 This special event can be then triggered immediately by your startup script and added to the high priority queue::
+
  subprocess.Popen('bokeh serve', shell=True)
  framework.append_event('start_bokeh', None)
 
