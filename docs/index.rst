@@ -41,14 +41,8 @@ Framework design and concepts
   keckdrpframework/arguments.rst
   keckdrpframework/pipelines.rst
   keckdrpframework/events_actions.rst
-<<<<<<< HEAD
-<<<<<<< HEAD
   keckdrpframework/framework.rst
-=======
->>>>>>> new docs
-=======
-  keckdrpframework/framework.rst
->>>>>>> adding documentation
+
 
 Reference/API
 =============
