@@ -312,7 +312,7 @@ class Framework(object):
     #
     # Methods to handle data set
     #
-    def ingest_data(self, path=None, files=None):
+    def ingest_data(self, path=None, files=None, monitor=False):
         """
         Adds files to the data_set.
         The data_set resides in the framework context.
@@ -320,18 +320,25 @@ class Framework(object):
         ds = self.context.data_set
         if ds is None:
             # Data_set will scan and import the content of the directory
-            ds = DataSet(path, self.logger, self.config)
+            ds = DataSet(path, self.logger, self.config, self.context.event_queue)
 
         if files is not None:
             for f in files:
                 ds.append_item(f)
 
-        for ditem in ds.data_table.index:
-            self.event_queue.put(Event("next_file", Arguments(name=ditem)))
+        #for ditem in ds.data_table.index:
+        #    self.logger.info("File ingestion: pushing next file event to the queue")
+        #    self.event_queue.put(Event("next_file", Arguments(name=ditem)))
 
         self.context.data_set = ds
+        if monitor:
+            self.context.data_set.start_monitor()
 
     def start(self, qm_only=False, ingest_data_only=False, wait_for_event=False, continuous=False):
+        for event in self.event_queue.get_pending():
+            print("HI priority: ", event.name, event.args)
+        for event in self.event_queue_hi.get_pending():
+            print("Low priority: ", event.name, event.args)
         if qm_only:
             self.logger.info("Queue manager only mode, no processing")
             self.waitForEver()
