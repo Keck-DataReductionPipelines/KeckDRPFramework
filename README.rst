@@ -1,11 +1,20 @@
-Prototype framework for DRPs at Keck
-------------------------------------
+Data reduction and processing framework at W.M. Keck Observatory
+----------------------------------------------------------------
 
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
+Documentation
+-------------
 
+Documentation for this project is maintained with ReadTheDocs at the following link:
+
+`<https://keckdrpframework.readthedocs.io/en/latest/>`_
+
+.. image:: https://readthedocs.org/projects/keckdrpframework/badge/?version=latest
+    :target: https://keckdrpframework.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 
 License
