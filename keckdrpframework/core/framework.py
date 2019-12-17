@@ -335,10 +335,6 @@ class Framework(object):
             self.context.data_set.start_monitor()
 
     def start(self, qm_only=False, ingest_data_only=False, wait_for_event=False, continuous=False):
-        for event in self.event_queue.get_pending():
-            print("HI priority: ", event.name, event.args)
-        for event in self.event_queue_hi.get_pending():
-            print("Low priority: ", event.name, event.args)
         if qm_only:
             self.logger.info("Queue manager only mode, no processing")
             self.waitForEver()
