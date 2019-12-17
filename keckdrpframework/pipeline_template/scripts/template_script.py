@@ -18,10 +18,10 @@ def _parseArguments(in_args):
     # this is a simple case where we provide a frame and a configuration file
     parser = argparse.ArgumentParser(prog=f"{in_args[0]}", description=description)
     parser.add_argument('-c', dest="config_file", type=str, help="Configuration file", required=True)
-    parser.add_argument('frames', nargs='*', type=str, help='input image file (full path, list ok)', default=None)
+    parser.add_argument('-frames', nargs='*', type=str, help='input image file (full path, list ok)', default=None)
 
     # in this case, we are loading an entire directory, and ingesting all the files in that directory
-    parser.add_argument('infiles', dest="infiles", help="Input files", nargs="*")
+    parser.add_argument('-infiles', dest="infiles", help="Input files", nargs="*")
     parser.add_argument('-d', '--directory', dest="dirname", type=str, help="Input directory", nargs='?', default=None)
     # after ingesting the files, do we want to continue monitoring the directory?
     parser.add_argument('-m', '--monitor', dest="monitor", action='store_true', default=False)
@@ -67,11 +67,11 @@ if __name__ == "__main__":
         framework.logger.info("Starting queue manager only, no processing")
         framework.start_queue_manager()
 
-    # single frame processing
+    # single frame processing (Modify the event "next_file" to be the exact event defined in your pipeline and in the primitive)
     elif args.frames:
         for frame in args.frames:
-        arguments = Arguments(name=frame)
-        framework.append_event('next_file', arguments)
+            arguments = Arguments(name=frame)
+            framework.append_event('next_file', arguments)
 
     # ingest an entire directory, trigger "next_file" on each file, optionally continue to monitor if -m is specified
     elif (len(args.infiles) > 0) or args.dirname is not None:

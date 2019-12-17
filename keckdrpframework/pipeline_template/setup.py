@@ -19,6 +19,8 @@ conf = ConfigParser()
 conf.read(['setup.cfg'])
 #metadata = dict(conf.items('metadata'))
 
+
+# MODIFY THE NAME OF THE PACKAGE to be the one chosen
 NAME = 'template'
 VERSION = '0.11.1dev'
 RELEASE = 'dev' not in VERSION
@@ -29,7 +31,7 @@ scripts = [fname for fname in glob.glob(os.path.join('scripts', '*'))
 # Define entry points for command-line scripts
 entry_points = {'console_scripts': []}
 
-
+# modify the list of packages, to make sure that your package is defined correctly
 setup(name=NAME,
       provides=NAME,
       version=VERSION,

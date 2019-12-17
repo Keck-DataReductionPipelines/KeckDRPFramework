@@ -3,15 +3,18 @@ This is a template pipeline.
 
 """
 
-from keckdrpframework.pipelines.base_pipeline import Base_pipeline
+from keckdrpframework.pipelines.base_pipeline import BasePipeline
+
+# MODIFY THIS IMPORT to reflect the name of the module created in the primitives directory
 from ..primitives.template_primitive import *
 
 
-class template_pipeline (Base_pipeline):
+class template_pipeline (BasePipeline):
     """
     The template pipeline.
     """
-    
+
+    # modify the event table to use the events actually defined in the primitives
     event_table = {
     # this is a standard primitive defined in the framework
     "next_file"     : ("simple_fits_reader", "file_ready", "template_primitive"),
@@ -25,7 +28,7 @@ class template_pipeline (Base_pipeline):
         """
         Constructor
         """
-        Base_pipeline.__init__(self)        
+        BasePipeline.__init__(self)
     
     def template_action (self, action, context):
         print("Template action", action)

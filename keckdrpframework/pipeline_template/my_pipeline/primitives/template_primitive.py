@@ -1,10 +1,13 @@
-from keckdrpframework.primitives.base_primitive import Base_primitive
+from keckdrpframework.primitives.base_primitive import BasePrimitive
 from keckdrpframework.models.arguments import Arguments
-from keckdrpframework.primitives.base_img import Base_img
+from keckdrpframework.primitives.base_img import BaseImg
 
-from keckdrpframework.primitives.base_primitive import Base_primitive
+from keckdrpframework.primitives.base_primitive import BasePrimitive
 
-class Template(Base_primitive):
+# MODIFY the name of this class and make sure that this module/file is imported in the pipelines definition file that
+# has been created in the pipeline directory
+
+class Template(BasePrimitive):
     """
     This is a template for primitives, which is usually an action.
 
@@ -20,7 +23,7 @@ class Template(Base_primitive):
         """
         Constructor
         """
-        Base_primitive.__init__(self, action, context)
+        BasePrimitive.__init__(self, action, context)
 
 
     def _perform (self):
