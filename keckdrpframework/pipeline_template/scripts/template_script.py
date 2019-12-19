@@ -67,9 +67,12 @@ if __name__ == "__main__":
         framework.logger.info("Starting queue manager only, no processing")
         framework.start_queue_manager()
 
-    # single frame processing (Modify the event "next_file" to be the exact event defined in your pipeline and in the primitive)
+    # single frame processing
     elif args.frames:
         for frame in args.frames:
+            # ingesting and triggering the default ingestion event specified in the configuration file
+            framework.ingest_data(None, args.frames, False)
+            # manually triggering an event upon ingestion, if desired.
             arguments = Arguments(name=frame)
             framework.append_event('next_file', arguments)
 
