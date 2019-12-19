@@ -26,6 +26,7 @@ class BasePipeline:
             "echo": ("echo", "stop", None),
             "no_event": ("no_event", None, None),
             "info": ("info", None, None),
+            "ingest_only": ("ingest_only", None, None)
         }
         self.logger = getLogger()
 
@@ -192,6 +193,16 @@ class BasePipeline:
         Test action 'echo'
         """
         self.logger.info(f"Echo action {action}")
+
+    def ingest_only(self, action, context):
+        """
+        Standard ingestion event, no action triggered
+        :param action:
+        :param context:
+        :return:
+        """
+        self.logger.info("File ingestion event")
+        return action.args
 
     def no_event(self, action, context):
         """

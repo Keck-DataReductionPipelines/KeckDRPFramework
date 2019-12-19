@@ -66,8 +66,11 @@ class DataSet:
                 short = os.path.basename(filename)
                 self.logger.info(f"Appending {short} data set")
                 self.data_table = self.data_table.append(row)
-                self.logger.info("Append item: pushing next file to the queue")
-                self.event_queue.put(Event("next_file", Arguments(name=filename)))
+                #self.logger.info("Append item: pushing next file to the queue")
+                try:
+                    self.event_queue.put(Event(self.config.default_ingestion_event, Arguments(name=filename)))
+                except:
+                    self.logger.warn("There is no default ingestion event in the configuration file")
 
     def update_data_set(self):
         """
