@@ -64,7 +64,7 @@ class DataSet:
             row = self.digest_new_item(filename)
             if not row is None:
                 short = os.path.basename(filename)
-                self.logger.info(f"Appending {short} data set")
+                self.logger.info(f"Appending {short} to the data set")
                 self.data_table = self.data_table.append(row)
                 #self.logger.info("Append item: pushing next file to the queue")
                 try:
