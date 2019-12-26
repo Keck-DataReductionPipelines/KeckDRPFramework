@@ -15,7 +15,7 @@ sys.path.extend(("../examples", ".."))
 def test_run_example():
     f = Framework(Fits2pngPipeline, "../examples/config.cfg")
     assert f is not None, "Could not create framework"
-    
+    f.config.fits2png = ConfigClass ("../examples/fits2png.cfg")
     f.ingest_data("test_files", ())
     f.start (qm_only=False,  ingest_data_only=False, wait_for_event=False, continuous=False)
     

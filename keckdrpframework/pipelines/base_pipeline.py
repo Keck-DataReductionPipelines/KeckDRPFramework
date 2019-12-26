@@ -7,6 +7,7 @@ This is the base pipeline.
 """
 
 import sys
+import re
 import importlib
 from keckdrpframework.utils.drpf_logger import getLogger
 from keckdrpframework.models.arguments import Arguments
@@ -17,7 +18,7 @@ class BasePipeline:
     classdocs
     """
 
-    def __init__(self):
+    def __init__(self, context):
         """
         Constructor
         """
@@ -27,20 +28,13 @@ class BasePipeline:
             "no_event": ("no_event", None, None),
             "info": ("info", None, None),
         }
-        self.logger = getLogger()
-
-    def init_pipeline(self):
-        pass
+        
+        self.context = context
+        self.logger = context.logger
 
     def true(self, *args, **kargs):
         return True
-
-    def set_logger(self, lger):
-        self.logger = lger
-
-    def set_context(self, context):
-        self.context = context
-
+    
     def not_found(self, name):
         """
         When no action is found, this method builds a dummy function that 
@@ -133,7 +127,6 @@ class BasePipeline:
             except Exception as e2:
                 if self.context.debug:
                     self.logger.warn(f"Name in {name} class ? {e2}")
-                
             
             # Is this name defined in this module ?
             if hasattr(sys.modules[self.__module__], name):

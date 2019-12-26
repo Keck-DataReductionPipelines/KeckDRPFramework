@@ -22,7 +22,8 @@ class NoiseRemoval(BasePrimitive):
         """
         BasePrimitive.__init__(self, action, context)
         cfg = self.config.fits2png
-        self.sigmas, self.sizes = cfg.get("denoise_sigmas", (1, 3)), cfg.get("denoise_sizes", (3, 3))
+        self.sigmas = eval(cfg.get("DEFAULT", "denoise_sigmas"))
+        self.sizes = (cfg.get("DEFAULT", "denoise_sizes"))
 
     def _denoise(self, _img, size=3, sigmas=3):
         """

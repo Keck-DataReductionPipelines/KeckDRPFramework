@@ -65,10 +65,13 @@ class Framework(object):
         
         Creates the event_queue and the action queue
         """
-        if configFile is None or isinstance(configFile, type("")):
+        if configFile is None:
+            self.config = ConfigClass()
+        elif isinstance(configFile, str):
             self.config = ConfigClass(configFile)
         else:
             self.config = configFile
+
         self.logger = getLogger(self.config.logger_config_file, name="DRPF")
 
         self.wait_for_event = False
@@ -79,13 +82,17 @@ class Framework(object):
         self.queue_manager = None
         self.event_queue = self._get_event_queue()
 
-        pipeline = find_pipeline(pipeline_name, self.config.pipeline_path, self.logger)
-        if pipeline is None:
-            raise Exception("Failed to initialize pipeline")
+        self.context = ProcessingContext(
+            self.event_queue, self.event_queue_hi, self.logger, self.config
+        )
 
-        self.context = ProcessingContext(self.event_queue, self.event_queue_hi, self.logger, self.config)
-        pipeline.set_logger(self.logger)
-        pipeline.set_context(self.context)
+        pipeline = find_pipeline(
+            pipeline_name, self.config.pipeline_path, self.context, self.logger
+        )
+
+        if pipeline is None:
+            raise Exception(f"Failed to initialize pipeline {pipeline_name}")
+
         self.pipeline = pipeline
 
         self.keep_going = True
@@ -106,7 +113,7 @@ class Framework(object):
         otherwise returns the Simple_event_queue, which will only work within a single process.
         """
         cfg = self.config
-        want_multi = cfg.get("want_multiprocessing", False)
+        want_multi = cfg.getValue("want_multiprocessing", False)
 
         if want_multi:
             hostname = cfg.queue_manager_hostname
@@ -138,8 +145,9 @@ class Framework(object):
                 ev = self.config.no_event_event
             if ev is None:
                 return None
-            time.sleep(self.config.no_event_wait_time)
-            ev.args = Arguments(name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now()))
+            ev.args = Arguments(
+                name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now())
+            )
             return ev
 
     def _push_event(self, event_name, args):
@@ -198,7 +206,9 @@ class Framework(object):
                 if pipeline.get_post_action(action_name)(action, context):
                     if not action.new_event is None:
                         # Post new event
-                        new_args = Arguments() if action_output is None else action_output
+                        new_args = (
+                            Arguments() if action_output is None else action_output
+                        )
                         self._push_event(action.new_event, new_args)
 
                     if not action.next_state is None:
@@ -216,7 +226,9 @@ class Framework(object):
                 if self.config.pre_condition_failed_stop:
                     context.state = "stop"
         except:
-            self.logger.error("Exception while invoking {}. Execution stopped.".format(action_name))
+            self.logger.error(
+                "Exception while invoking {}. Execution stopped.".format(action_name)
+            )
             context.state = "stop"
             if self.config.print_trace:
                 traceback.print_exc()
@@ -235,7 +247,10 @@ class Framework(object):
                 if event is None:
                     self.logger.info("No new events - do nothing")
 
-                    if self.event_queue.qsize() == 0 and self.event_queue_hi.qsize() == 0:
+                    if (
+                        self.event_queue.qsize() == 0
+                        and self.event_queue_hi.qsize() == 0
+                    ):
                         self.logger.info(f"No pending events or actions, terminating")
                         self.keep_going = False
                     continue
@@ -331,7 +346,13 @@ class Framework(object):
 
         self.context.data_set = ds
 
-    def start(self, qm_only=False, ingest_data_only=False, wait_for_event=False, continuous=False):
+    def start(
+        self,
+        qm_only=False,
+        ingest_data_only=False,
+        wait_for_event=False,
+        continuous=False,
+    ):
         if qm_only:
             self.logger.info("Queue manager only mode, no processing")
             self.waitForEver()
@@ -348,7 +369,7 @@ class Framework(object):
                 self.waitForEver()
 
 
-def find_pipeline(pipeline_name, prefixes, logger):
+def find_pipeline(pipeline_name, pipeline_path, context, logger):
     def to_camel_case(instr):
         out = []
         flag = True
@@ -367,14 +388,14 @@ def find_pipeline(pipeline_name, prefixes, logger):
     Finds the class called pipeline_name and instantiates an object of that class.
     """
 
-    if not isinstance(pipeline_name, type("")):  # not string
+    if not isinstance(pipeline_name, str):  # not string
         if isinstance(pipeline_name, type):  # is a class
-            return pipeline_name()
+            return pipeline_name(context)
         elif isinstance(pipeline_name, type(sys)):  # is a module
             last_name = pipeline_name.__name__.split(".")[-1]
             klass = getattr(pipeline_name, to_camel_case(last_name))
             if klass is not None:
-                return klass()
+                return klass(context)
         elif isinstance(pipeline_name, object):  # object
             return pipeline_name
         logger.error(f"{pipeline_name} must be a module, a class or a string")
@@ -390,13 +411,14 @@ def find_pipeline(pipeline_name, prefixes, logger):
             module = importlib.import_module(module_name)
             klass = getattr(module, to_camel_case(last_name))
             if klass is not None:
-                return klass()
+                return klass(context)
     except Exception as me:
         logger.info(f"failed loading as string {pipeline_name}")
+        logger.info(f"Trying {pipeline_path} next")
 
-    if prefixes is None:
-        prefixes = ("",)
-    for p in prefixes:
+    if pipeline_path is None:
+        pipeline_path = ("",)
+    for p in pipeline_path:
         try:
             full_name = pipeline_name
             if p:
@@ -406,7 +428,9 @@ def find_pipeline(pipeline_name, prefixes, logger):
             if hasattr(module, class_name):
                 klass = getattr(module, class_name)
                 if klass is not None:
+                    logger.info(f"Found {class_name} in {full_name}")
                     break
+            logger.info(f"Class {class_name} not in {full_name}")
         except ModuleNotFoundError as me:
             logger.info(f"Failed loading pipeline {full_name}, {me}")
             continue
@@ -415,9 +439,9 @@ def find_pipeline(pipeline_name, prefixes, logger):
             break
 
     if klass is not None:
-        return klass()
+        return klass(context)
 
-    logger.error(f"Could not find pipeline {pipeline_name} in {prefixes}")
+    logger.error(f"Could not find pipeline {pipeline_name} in {pipeline_path}")
 
     return None
 

@@ -25,8 +25,8 @@ class HistEqual2d(BasePrimitive):
         """
         BasePrimitive.__init__(self, action, context)
         cfg = self.config.fits2png
-        self.cut_width = cfg.get("hist_equal_cut_width", 3)
-        self.n_hist = cfg.get("hist_equal_length", 65536)
+        self.cut_width = cfg.getint("DEFAULT", "hist_equal_cut_width")
+        self.n_hist = eval (cfg.get("DEFAULT", "hist_equal_length"))
 
     def _remap(self, arr, from_lo, from_hi, to_lo, to_hi):
         if from_hi == from_lo:

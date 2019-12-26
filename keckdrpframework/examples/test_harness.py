@@ -72,7 +72,7 @@ if __name__ == "__main__":
         framework.logger.info("Starting queue manager only, no processing")
         framework.start_queue_manager()
     else:
-        print("infiles", args.infiles, "dirname", args.dirname)
+        framework.logger.info (f"infiles {args.infiles}, dirname {args.dirname}")
         if (len(args.infiles) > 0) or args.dirname is not None:
             # Ingest data and terminate
             framework.ingest_data(args.dirname, args.infiles)

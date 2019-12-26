@@ -28,4 +28,5 @@ echo $PYTHONPATH
 # sh runTest_harness.sh fits2png_pipeline config.cfg -d ../unit_tests/test_files
 #
 
+\rm -rf output/*.png output/test.html
 python test_harness.py $*

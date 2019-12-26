@@ -53,6 +53,7 @@ class CreateContactSheetHTML(BasePrimitive):
         for f in flist:
             out.append(self._genEntry(f))
 
+        os.makedirs(dir_name, exist_ok=True)
         with open(dir_name + "/" + out_name, "w") as fh:
             print("<html><body>", file=fh)
             print("\n".join(out), file=fh)

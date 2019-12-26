@@ -13,6 +13,7 @@ Created on Jul 8, 2019
 @author: skwok
 """
 
+from configparser import ConfigParser
 from keckdrpframework.pipelines.base_pipeline import BasePipeline
 
 from keckdrpframework.primitives.create_contact_sheet_HTML import CreateContactSheetHTML
@@ -32,18 +33,19 @@ class Fits2pngPipeline(BasePipeline):
         "contact_sheet": ("contact_sheet", None, None),
     }
 
-    def __init__(self):
+    def __init__(self, context):
         """
         Constructor
         """
-        BasePipeline.__init__(self)
-        self.cnt = 0
-
-    def set_context(self, context):
-        """
-        Additional initialization of context
-        """
+        super(Fits2pngPipeline, self).__init__(context)
         self.context = context
+        
+        fits2png = ConfigParser()
+        fits2png.read ("fits2png.cfg")
+        
+        self.context.config.fits2png = fits2png
+        
+        self.cnt = 0
 
     def post_save_png(self, action, context):
         self.cnt += 1

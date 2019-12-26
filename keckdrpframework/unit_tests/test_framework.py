@@ -7,6 +7,7 @@ import pytest
 import sys
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.framework import Framework
+from keckdrpframework.models.processing_context import ProcessingContext    
 from keckdrpframework.examples.pipelines import fits2png_pipeline
 from keckdrpframework.examples.pipelines.fits2png_pipeline import Fits2pngPipeline
 
@@ -22,8 +23,9 @@ def test_as_string():
     """
     pipeline is a string
     """
-    # f = Framework("keckdrpframework.examples.pipelines.fits2png_pipeline", None)
-    f = Framework("fits2png_pipeline", None)
+    cfg = ConfigClass ()
+    cfg.pipeline_path = ("", "keckdrpframework.examples.pipelines")    
+    f = Framework("fits2png_pipeline", cfg)
     assert f is not None
 
 
@@ -74,6 +76,7 @@ def test_as_object():
     """
     config is a string
     """
-    obj = fits2png_pipeline.Fits2pngPipeline()
+    context = ProcessingContext (None, None, None, ConfigClass())    
+    obj = fits2png_pipeline.Fits2pngPipeline(context)
     f = Framework(obj, "../examples/config.cfg")
     assert f is not None, "Could not create framework using instance of class"
