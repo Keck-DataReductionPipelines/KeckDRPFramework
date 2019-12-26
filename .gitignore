@@ -3,3 +3,5 @@ build
 keckdrpframework.egg-info
 cython_version.py
 version.py
+/.project
+/.pydevproject
