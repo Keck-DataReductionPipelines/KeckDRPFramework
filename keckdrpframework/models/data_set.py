@@ -10,7 +10,8 @@ import threading
 import time
 import glob
 import pandas as pd
-
+from keckdrpframework.models.event import Event
+from keckdrpframework.models.arguments import Arguments
 import astropy.io.fits as pf
 from astropy.utils.exceptions import AstropyWarning
 import warnings
@@ -22,7 +23,7 @@ class DataSet:
     Content is stored in self.data_table, which is a pandas data frame.
     """
 
-    def __init__(self, dirname, logger, config):
+    def __init__(self, dirname, logger, config, event_queue):
         """
         Constructor
         """
@@ -33,6 +34,7 @@ class DataSet:
         self.must_stop = False
         self.monitor_interval = config.monitor_interval
         self.file_type = config.file_type
+        self.event_queue = event_queue
         self.update_data_set()
 
     def digest_new_item(self, filename):
@@ -62,8 +64,13 @@ class DataSet:
             row = self.digest_new_item(filename)
             if not row is None:
                 short = os.path.basename(filename)
-                self.logger.info(f"Appending {short} data set")
+                self.logger.info(f"Appending {short} to the data set")
                 self.data_table = self.data_table.append(row)
+                #self.logger.info("Append item: pushing next file to the queue")
+                try:
+                    self.event_queue.put(Event(self.config.default_ingestion_event, Arguments(name=filename)))
+                except:
+                    self.logger.warn("There is no default ingestion event in the configuration file")
 
     def update_data_set(self):
         """
@@ -71,6 +78,7 @@ class DataSet:
         Called by loop() when monitoring the directory.
         Or can be called on demand.
         """
+        self.logger.info("Ingesting data from: %s" % self.dir_name)
         if self.dir_name is None:
             return
         if not os.path.isdir(self.dir_name):
