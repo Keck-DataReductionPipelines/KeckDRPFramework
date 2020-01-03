@@ -10,7 +10,8 @@ from keckdrpframework.models.data_set import DataSet
 
 class ProcessingContext:
     """
-    The
+    The processing context is a place holder for all objects that 
+    are needed or created during processing.
     """
 
     def __init__(self, event_queue, event_queue_hi, logger, config):
