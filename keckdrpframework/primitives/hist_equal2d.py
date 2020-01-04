@@ -90,7 +90,7 @@ class HistEqual2d(BasePrimitive):
 
     def _applyAHEq(self, img):
         n_hist = self.config.hist_equal_length
-        flatData = data.flatten()
+        flatData = img.flatten()
         leng = len(flatData)
         histg, edges = np.histogram(flatData, bins=n_hist, density=False)
         from_lo = edges[0]
