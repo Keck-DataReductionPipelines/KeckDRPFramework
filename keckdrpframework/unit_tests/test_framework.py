@@ -7,7 +7,7 @@ import pytest
 import sys
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.framework import Framework
-from keckdrpframework.models.processing_context import ProcessingContext    
+from keckdrpframework.models.processing_context import ProcessingContext
 from keckdrpframework.examples.pipelines import fits2png_pipeline
 from keckdrpframework.examples.pipelines.fits2png_pipeline import Fits2pngPipeline
 
@@ -78,5 +78,5 @@ def test_as_object():
     """
     context = ProcessingContext (None, None, None, ConfigClass())    
     obj = fits2png_pipeline.Fits2pngPipeline(context)
-    f = Framework(obj, "../examples/config.cfg")
+    f = Framework(obj, "example_config.cfg")
     assert f is not None, "Could not create framework using instance of class"

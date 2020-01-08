@@ -13,7 +13,7 @@ from keckdrpframework.examples.pipelines.fits2png_pipeline import Fits2pngPipeli
 sys.path.extend(("../examples", ".."))
 
 def test_run_example():
-    f = Framework(Fits2pngPipeline, "../examples/config.cfg")
+    f = Framework(Fits2pngPipeline, "example_config.cfg")
     assert f is not None, "Could not create framework"
     f.config.fits2png = ConfigClass ("../examples/fits2png.cfg")
     f.ingest_data("test_files", ())

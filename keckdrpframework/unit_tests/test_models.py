@@ -71,7 +71,7 @@ def init_data_set():
     config = ConfigClass()
     logger = getLogger(config.logger_config_file, name="DRPF")
 
-    data_set = DataSet("test_files", logger, config)
+    data_set = DataSet("test_files", logger, config, SimpleEventQueue())
     return data_set
 
 
