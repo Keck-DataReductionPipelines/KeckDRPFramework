@@ -29,5 +29,4 @@ echo $PYTHONPATH
 # sh runTest_harness2.sh config.cfg -d ../unit_tests/test_files
 #
 
-\rm -rf output/*.png output/test.html
 python test_harness2.py $*
