@@ -29,6 +29,7 @@ class ConfigClass(ConfigParser):
         "output_directory": "output",
         "temp_directory": "temp",
         "no_event_event": None,
+        "default_ingestion_event": "next_file",
         "no_event_wait_time": 5,  # sec,
         "pre_condition_failed_stop": False,
         "file_type": "*.fits",
