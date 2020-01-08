@@ -119,8 +119,15 @@ class Framework(object):
             hostname = cfg.queue_manager_hostname
             portnr = cfg.queue_manager_portnr
             auth_code = cfg.queue_manager_auth_code
-            self.logger.info("Getting shared event queue")
-            return queues.get_event_queue(hostname, portnr, auth_code)
+            self.logger.info(f"Getting shared event queue from {hostname}:{portnr}")
+            queue = queues.get_event_queue(hostname, portnr, auth_code)
+            if queue is None:
+                self.logger.info ("Starting Queue Manager")
+                self.queue_manager = queues.start_queue_manager(hostname, portnr, auth_code)
+                queue = queues.get_event_queue(hostname, portnr, auth_code)
+                if queue is not None:
+                    self.logger.info("Got event queue from Queue Manager")
+            return queue
 
         return queues.SimpleEventQueue()
 
@@ -253,6 +260,11 @@ class Framework(object):
                     ):
                         self.logger.info(f"No pending events or actions, terminating")
                         self.keep_going = False
+                        if self.queue_manager is not None:
+                            try:
+                                self.event_queue.terminate()
+                            except:
+                                pass
                     continue
 
                 action = self.event_to_action(event, self.context)
