@@ -77,7 +77,7 @@ class MultiprocEventQueue:
     def qsize(self):
         return self.queue.qsize()
 
-    def terminate(self):
+    def terminate(self):        
         os._exit(0)
 
 
@@ -91,7 +91,7 @@ def _get_queue_manager(hostname, portnr, auth_code):
         manager = QueueServer(address=(hostname, portnr), authkey=auth_code)
         manager.connect()
         return manager
-    except:
+    except Exception as e:
         return None
 
 
@@ -112,8 +112,18 @@ def _queue_manager_target(hostname, portnr, auth_code):
 
     print("Queue manager target terminated")
 
+def start_queue_manager (hostname, portnr, auth_code):
+    p = Process(target=_queue_manager_target, args=(hostname, portnr, auth_code))
+    p.start()
+    time.sleep (2)
+    return p
 
 def get_event_queue(hostname, portnr, auth_code):
+    """
+    This functions gets the shared queue.
+    First it connects to the manager, the process that contains the queue.
+    Then it asks the manager for the queue by calling the registered function get_queue(). 
+    """
     manager = _get_queue_manager(hostname, portnr, auth_code)
     if manager is None:
         return None
