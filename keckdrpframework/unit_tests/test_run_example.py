@@ -6,11 +6,13 @@
 import pytest
 import sys
 import glob
+
+sys.path.append ("../..")
+
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.examples.pipelines.fits2png_pipeline import Fits2pngPipeline
 
-sys.path.extend(("../examples", ".."))
 
 def test_run_example():
     f = Framework(Fits2pngPipeline, "example_config.cfg")

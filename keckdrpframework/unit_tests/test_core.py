@@ -4,6 +4,8 @@
 # Created: 2019-09-26, skwok
 #
 import pytest
+import sys
+sys.path.append ("../..")
 
 from keckdrpframework.models.arguments import Arguments
 from keckdrpframework.models.event import Event

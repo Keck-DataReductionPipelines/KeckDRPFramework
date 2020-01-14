@@ -5,13 +5,15 @@
 #
 import pytest
 import sys
+
+sys.path.append ("../..")
+
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.models.processing_context import ProcessingContext
 from keckdrpframework.examples.pipelines import fits2png_pipeline
 from keckdrpframework.examples.pipelines.fits2png_pipeline import Fits2pngPipeline
 
-sys.path.append("../examples")
 
 
 #

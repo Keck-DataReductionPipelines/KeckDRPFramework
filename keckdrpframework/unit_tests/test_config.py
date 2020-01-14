@@ -5,9 +5,12 @@
 #
 import pytest
 import sys
+
+sys.path.append ("../..")
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.examples.pipelines.fits2png_pipeline import Fits2pngPipeline
+
 
 def test_config1():
     """
