@@ -10,6 +10,7 @@ sys.path.append ("../..")
 
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.framework import Framework
+from keckdrpframework.utils.drpf_logger import getLogger
 from keckdrpframework.models.processing_context import ProcessingContext
 from keckdrpframework.examples.pipelines import fits2png_pipeline
 from keckdrpframework.examples.pipelines.fits2png_pipeline import Fits2pngPipeline
@@ -77,8 +78,10 @@ def test_as_class2():
 def test_as_object():
     """
     config is a string
-    """
-    context = ProcessingContext (None, None, None, ConfigClass())    
+    """    
+    config = ConfigClass()
+    logger = getLogger(config.logger_config_file, name="DRPF")
+    context = ProcessingContext (None, None, logger, config)    
     obj = fits2png_pipeline.Fits2pngPipeline(context)
     f = Framework(obj, "example_config.cfg")
     assert f is not None, "Could not create framework using instance of class"
