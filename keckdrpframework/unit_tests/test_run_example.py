@@ -7,7 +7,7 @@ import pytest
 import sys
 import glob
 
-sys.path.append ("../..")
+sys.path.extend (("../examples", ".."))
 
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.framework import Framework
