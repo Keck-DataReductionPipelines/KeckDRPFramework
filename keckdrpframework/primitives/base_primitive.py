@@ -12,7 +12,7 @@ A primitive should have:
 Subclassses should be defined like this:
 
     def __init__(self, action, context):
-         Base_primitive.__init__(self, action, context)
+         BasePrimitive.__init__(self, action, context)
         
     def _perform (self):
         ...
@@ -27,7 +27,8 @@ Recipes use apply()
 @author: skwok
 """
 
-class Base_primitive:
+
+class BasePrimitive:
     """
     This is the base primitive.
     """
@@ -41,27 +42,25 @@ class Base_primitive:
         self.output = action.args
         self.logger = context.logger
         self.config = context.config
-        
-    def _pre_condition (self):
+
+    def _pre_condition(self):
         return True
-    
-    def _post_condition (self):
-        return True 
-    
-    def _perform (self):
-        raise Exception ("Not yet implemented")
-    
-    def apply (self):
+
+    def _post_condition(self):
+        return True
+
+    def _perform(self):
+        raise Exception("Not yet implemented")
+
+    def apply(self):
         if self._pre_condition():
             output = self._perform()
             if self._post_condition():
                 self.output = output
         return self.output
-            
-    def __call__ (self):
+
+    def __call__(self):
         """
         Makes objects of this calls callable.
         """
         return self.apply()
-            
-        

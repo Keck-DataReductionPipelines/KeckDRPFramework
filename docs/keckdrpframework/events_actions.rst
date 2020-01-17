@@ -47,5 +47,3 @@ field of the ``event`` that has been triggered, and sends the resulting code to 
 The actual execution depends on how the function was declared, but in the most general form the framework
 would look for ``pre`` and ``post`` conditions and run the ``apply`` method if it is defined.
 
-
-

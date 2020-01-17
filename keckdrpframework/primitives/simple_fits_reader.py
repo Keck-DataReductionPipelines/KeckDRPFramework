@@ -6,19 +6,21 @@ Be aware that hdus.close () needs to be called to limit the number of open files
 @author: skwok
 """
 
-import astropy.io.fits as pf 
+import astropy.io.fits as pf
 from astropy.utils.exceptions import AstropyWarning
 import warnings
 
 from keckdrpframework.models.arguments import Arguments
-from keckdrpframework.primitives.base_primitive import Base_primitive
+from keckdrpframework.primitives.base_primitive import BasePrimitive
 
-def open_nowarning (filename):
+
+def open_nowarning(filename):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", AstropyWarning)
         return pf.open(filename, memmap=False)
 
-class simple_fits_reader (Base_primitive):
+
+class SimpleFitsReader(BasePrimitive):
     """
     classdocs
     """
@@ -26,21 +28,18 @@ class simple_fits_reader (Base_primitive):
     def __init__(self, action, context):
         """
         Constructor
-        """    
-        Base_primitive.__init__(self, action, context)
-        
-    def _perform (self):
+        """
+        BasePrimitive.__init__(self, action, context)
+
+    def _perform(self):
         """
         Expects action.args.name as fits file name
         Returns HDUs or (later) data model
         """
         name = self.action.args.name
-        self.logger.info (f"Reading {name}")
+        self.logger.info(f"Reading {name}")
         out_args = Arguments()
         out_args.name = name
         out_args.hdus = open_nowarning(name)
-        
+
         return out_args
-    
-         
-           

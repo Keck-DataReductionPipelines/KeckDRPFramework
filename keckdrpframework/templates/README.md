@@ -19,3 +19,4 @@ After creating the new directory, run the command:
     
 to verify that new skeleton pipeline is working properly.
 
+After creating *projectA*, it can be moved to another location.

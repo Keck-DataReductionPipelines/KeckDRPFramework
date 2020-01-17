@@ -6,7 +6,8 @@ changeOneFile()
     NAME1=$1
     FNAME=$2
     OUTFILE=$3
-    sed -e 's/template/'"$NAME1"'/g' $FNAME > $OUTFILE
+    CAPNAME=`echo $NAME1 | sed -e 's/.*/\u&/'`
+    sed -e 's/template/'"$NAME1"'/g' -e 's/Template/'"$CAPNAME"'/g' $FNAME > $OUTFILE
 }
 
 NEWNAME=`basename $1`
@@ -17,6 +18,8 @@ then
     echo 
     echo "Usage: make_copy.sh  NEW_NAME"
     echo "For example: make_copy.sh projectA"
+    echo "    projectA will be created in the parent directory"
+    echo "    After copying, projectA can be moved to another location"
     exit 1
 fi
 

@@ -5,12 +5,13 @@ Created on Jul 8, 2019
 """
 
 from keckdrpframework.models.event import Event
-from keckdrpframework.models.data_set import Data_set
+from keckdrpframework.models.data_set import DataSet
 
 
-class Processing_context:
+class ProcessingContext:
     """
-    The
+    The processing context is a place holder for all objects that 
+    are needed or created during processing.
     """
 
     def __init__(self, event_queue, event_queue_hi, logger, config):
@@ -24,8 +25,8 @@ class Processing_context:
         self.event_queue = event_queue
         self.logger = logger
         self.config = config
-        self.data_set = None
+        self.data_set = DataSet(None, logger, config, event_queue)
         self.debug = False
-        
-    def push_event (self, event_name, args):
-        self.event_queue_hi.put(Event (event_name, args))
+
+    def push_event(self, event_name, args):
+        self.event_queue_hi.put(Event(event_name, args))

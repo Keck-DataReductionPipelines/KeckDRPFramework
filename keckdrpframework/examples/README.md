@@ -47,7 +47,7 @@ These consumers/clients can run on the same host or on different hosts.
 
 The option that enables multiprocessing is `want_multiprocessing = True` in the configuration file, see `config.cfg`.
 When enabled, there other options that need to be defined and adapted for your environment:
-   -  queue_manager_hostname = "localhost"
-   -  queue_manager_portnr = 50101
-   -  queue_manager_auth_code = b"a very long authentication code" 
+   -  queue\_manager\_hostname = "localhost"
+   -  queue\_manager\_portnr = 50101
+   -  queue\_manager\_auth\_code = b"a very long authentication code" 
 
