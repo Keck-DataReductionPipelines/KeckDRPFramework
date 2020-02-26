@@ -192,7 +192,7 @@ have the same options.
 The shell script runTest_harness.sh provides a convenient way to start
 the Python script.
 
-test_harness2.py [-w] [-W] [-s] [-i] config_file [file [files ...]]|[-d
+test_harness2.py [-w] [-W] [-s] [-i] [-c config_file] [file [files ...]]|[-d
 dirname]
 
 The options are:
@@ -207,7 +207,7 @@ The options are:
 
    -d, --directory: directory name
 
-   config_file: name of configuration file
+   -c, --config config_file: name of configuration file
 
    file [files]: names of FITS files to process
 
@@ -222,7 +222,7 @@ This is the simplest case where only one process is involved.
 First, confirm that the flag want_multiprocessing is True and
 no_event_event is None in the configuration file, config.cfg.
 
-sh runTest_harness2.sh –d ../unit_test/test_files config.cfg
+sh runTest_harness2.sh -c config.cfg –d ../unit_test/test_files
 
 This test produces 6 PNG files in the output directory corresponding to
 the 6 FITS files in the ../unit_test/test_files directory. The program
@@ -235,13 +235,13 @@ One Queue Manager and one Worker.
 
 Start Queue Manager only:
 
-sh runTest_harness2.sh –s config.cfg
+sh runTest_harness2.sh –s -c config.cfg
 
 This process starts the Queue Manager and nothing else.
 
 On the same host or on a remote host run the following command:
 
-sh runTest_harness2.sh–d ../unit_test/test_files config.cfg
+sh runTest_harness2.sh -c config.cfg –d ../unit_test/test_files
 
 This process communicates with the Queue Manager to access the event
 queue. This process terminates also.
@@ -253,16 +253,16 @@ One Queue Manager, one Manager and Workers.
 
 Start Queue Manager only:
 
-sh runTest_harness2.sh –s config.cfg
+sh runTest_harness2.sh –s -c config.cfg
 
 On one host, run with ingest_data_only option. The process will
 terminate once all files are ingested.
 
-sh runTest_harness2.sh–i –d ../unit_test/test_files config.cfg
+sh runTest_harness2.sh–i -c config.cfg –d ../unit_test/test_files
 
 On the same host or on a remote host, run one or more Worker processes:
 
-sh runTest_harness2.sh config.cfg
+sh runTest_harness2.sh -c config.cfg
 
 Note that because there only 6 FITS files, the processing is quick. Try
 to provide an alternative directory with more files to appreciate the
@@ -275,16 +275,16 @@ One Queue Manager, Workers start first and one Manager.
 
 Start Queue Manager only:
 
-sh runTest_harness2.sh –s config.cfg
+sh runTest_harness2.sh –s -c config.cfg
 
 On one host, run with wait_for_event option. This process will wait for
 events and will terminate when there are no more events.
 
-sh runTest_harness2.sh –w config.cfg
+sh runTest_harness2.sh –w -c config.cfg
 
 On the same host or on a remote host, ingest data only:
 
-sh runTest_harness2.sh –i –d ../unit_test/test_files config.cfg
+sh runTest_harness2.sh –i –d ../unit_test/test_files -c config.cfg
 
 References
 ==========

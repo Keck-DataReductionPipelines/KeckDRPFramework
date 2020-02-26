@@ -7,12 +7,18 @@ Created on Jul 8, 2019
 
 class Action(object):
     """
-    classdocs
+    Action, represents action to pass to a primitive.
+    Action Constructor:
+        Action (eenvt_info, args)
+        event_info: a tuple (action_name, state_name, next_event)
+        args: Arguments (key1=val1, key2=val2, ...)
     """
 
     def __init__(self, event_info, args):
         """
-        Constructor
+        Action Constructor:
+        event_info: a tuple (action_name, state_name, next_event)
+        args: Arguments (key1=val1, key2=val2, ...)
         """
         self.name, self.next_state, self.new_event = event_info
         self.args = args

@@ -77,7 +77,7 @@ class MultiprocEventQueue:
     def qsize(self):
         return self.queue.qsize()
 
-    def terminate(self):        
+    def terminate(self):
         os._exit(0)
 
 
@@ -112,11 +112,13 @@ def _queue_manager_target(hostname, portnr, auth_code):
 
     print("Queue manager target terminated")
 
-def start_queue_manager (hostname, portnr, auth_code):
+
+def start_queue_manager(hostname, portnr, auth_code):
     p = Process(target=_queue_manager_target, args=(hostname, portnr, auth_code))
     p.start()
-    time.sleep (2)
+    time.sleep(2)
     return p
+
 
 def get_event_queue(hostname, portnr, auth_code):
     """

@@ -27,8 +27,9 @@ class Fits2pngPipeline(BasePipeline):
 
     event_table = {
         "next_file": ("simple_fits_reader.SimpleFitsReader", "file_ready", "file_ready"),
-        "file_ready": ("noise_removal", "noise_removed", "noise_removed"),
-        "noise_removed": ("hist_equal2d", "histeq_done", "histeq_done"),
+        # "file_ready": ("noise_removal", "noise_removed", "noise_removed"),
+        # "noise_removed": ("hist_equal2d", "histeq_done", "histeq_done"),
+        "file_ready": ("hist_equal2d", "histeq_done", "histeq_done"),
         "histeq_done": ("save_png", None, None),
         "contact_sheet": ("contact_sheet", None, None),
     }
@@ -39,12 +40,12 @@ class Fits2pngPipeline(BasePipeline):
         """
         super(Fits2pngPipeline, self).__init__(context)
         self.context = context
-        
+
         fits2png = ConfigParser()
-        fits2png.read ("fits2png.cfg")
-        
+        fits2png.read("fits2png.cfg")
+
         self.context.config.fits2png = fits2png
-        
+
         self.cnt = 0
 
     def post_save_png(self, action, context):

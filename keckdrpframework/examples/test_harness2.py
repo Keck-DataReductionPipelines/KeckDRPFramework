@@ -25,16 +25,14 @@ from keckdrpframework.examples.pipelines import fits2png_pipeline
 
 def _parseArguments(in_args):
     description = "Test harness2 for Keck DRP Framework"
-    usage = "\n{}  [-w] [-W] [-s] [-i] config_file [file [files ...]]|[-d dirname]\n".format(in_args[0])
+    usage = "\n{}  [-w] [-W] [-s] [-i] [-o outdir] [-d dirname] [-c config_file] [file [files ...]]\n".format(in_args[0])
     epilog = "\nRuns the given pipeline using the given configuration\n"
 
     parser = argparse.ArgumentParser(prog=f"{in_args[0]}", description=description, usage=usage, epilog=epilog)
 
-    parser.add_argument(dest="config_file", type=str, help="Configuration file")
-
+    parser.add_argument("-c", "--config", dest="config_file", type=str, help="Configuration file")
     parser.add_argument("-w", "--wait_for_event", dest="wait_for_event", action="store_true", help="Wait for events")
     parser.add_argument("-W", "--continue", dest="continuous", action="store_true", help="Continue processing, wait for ever")
-
     parser.add_argument(
         "-s",
         "--start_queue_manager_only",
@@ -42,11 +40,12 @@ def _parseArguments(in_args):
         action="store_true",
         help="Starts queue manager only, no processing",
     )
-
     parser.add_argument("-i", "--ingest_data_only", dest="ingest_data_only", action="store_true", help="Ingest data and terminate")
+    parser.add_argument("-o", "--outdir", dest="outdir", type=str, help="Output directory", default=None)
     parser.add_argument("-d", "--directory", dest="dirname", type=str, help="Input directory")
+
     parser.add_argument(dest="infiles", help="Input files", type=str, nargs="*", default=None)
-    
+
     args = parser.parse_args(in_args[1:])
     return args
 
@@ -85,9 +84,10 @@ if __name__ == "__main__":
         # The queue manager runs for ever.
         framework.logger.info("Starting queue manager only, no processing")
         sys.exit(1)
-        
+
     else:
-        print("infiles", args.infiles, "dirname", args.dirname)
+        if args.outdir is not None:
+            framework.config.output_directory = args.outdir
         if (len(args.infiles) > 0) or args.dirname is not None:
             # Ingest data and terminate
             framework.ingest_data(args.dirname, args.infiles)

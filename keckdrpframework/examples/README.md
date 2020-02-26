@@ -25,21 +25,23 @@ These files are then appended to the event queue for processing.
 runTest_harness.sh is a simple wrapper to help test the pipelines. 
 It sets the necessary environment variables for the right version of Python.
 
-      runTest_harness.sh pipeline_name config_file files ...
+      runTest_harness.sh -c config_file pipeline_name files ...
       
       or
       
-      runTest_harness.sh pipeline_name config_file -d dirname
+      runTest_harness.sh -c config_file -d dirname pipeline_name
       
 For example:
 
-      runTest_harness.sh fits2png_pipeline config.cfg -d ../unit_tests/test_files 
+      runTest_harness.sh  -c config.cfg -d ../unit_tests/test_files  fits2png_pipeline 
 
 
 The command above will create the output directory if it does not already exists and generate a PNG file for each FITS file in 
 the input directory of file list. The name of the output directory is defined in the configuration file, option `output_directory`. 
 
 ### Multi-processing
+
+See [Notes-Parallel-Processing.rst](Notes-Parallel-Processing.rst) for details.
 
 When multi-processing is desired, there are more options.
 First, a Queue manager process must be started that manages a shared queue for all consumers/clients.
@@ -50,4 +52,5 @@ When enabled, there other options that need to be defined and adapted for your e
    -  queue\_manager\_hostname = "localhost"
    -  queue\_manager\_portnr = 50101
    -  queue\_manager\_auth\_code = b"a very long authentication code" 
+
 

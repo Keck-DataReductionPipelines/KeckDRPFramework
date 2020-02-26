@@ -13,6 +13,7 @@ import traceback
 import time
 import importlib
 import sys
+import os
 
 from keckdrpframework.core import queues
 
@@ -82,13 +83,9 @@ class Framework(object):
         self.queue_manager = None
         self.event_queue = self._get_event_queue()
 
-        self.context = ProcessingContext(
-            self.event_queue, self.event_queue_hi, self.logger, self.config
-        )
+        self.context = ProcessingContext(self.event_queue, self.event_queue_hi, self.logger, self.config)
 
-        pipeline = find_pipeline(
-            pipeline_name, self.config.pipeline_path, self.context, self.logger
-        )
+        pipeline = find_pipeline(pipeline_name, self.config.pipeline_path, self.context, self.logger)
 
         if pipeline is None:
             raise Exception(f"Failed to initialize pipeline {pipeline_name}")
@@ -122,7 +119,7 @@ class Framework(object):
             self.logger.info(f"Getting shared event queue from {hostname}:{portnr}")
             queue = queues.get_event_queue(hostname, portnr, auth_code)
             if queue is None:
-                self.logger.info ("Starting Queue Manager")
+                self.logger.info("Starting Queue Manager")
                 self.queue_manager = queues.start_queue_manager(hostname, portnr, auth_code)
                 queue = queues.get_event_queue(hostname, portnr, auth_code)
                 if queue is not None:
@@ -152,9 +149,7 @@ class Framework(object):
                 ev = self.config.no_event_event
             if ev is None:
                 return None
-            ev.args = Arguments(
-                name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now())
-            )
+            ev.args = Arguments(name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now()))
             return ev
 
     def _push_event(self, event_name, args):
@@ -213,9 +208,7 @@ class Framework(object):
                 if pipeline.get_post_action(action_name)(action, context):
                     if not action.new_event is None:
                         # Post new event
-                        new_args = (
-                            Arguments() if action_output is None else action_output
-                        )
+                        new_args = Arguments() if action_output is None else action_output
                         self._push_event(action.new_event, new_args)
 
                     if not action.next_state is None:
@@ -233,9 +226,7 @@ class Framework(object):
                 if self.config.pre_condition_failed_stop:
                     context.state = "stop"
         except:
-            self.logger.error(
-                "Exception while invoking {}. Execution stopped.".format(action_name)
-            )
+            self.logger.error("Exception while invoking {}. Execution stopped.".format(action_name))
             context.state = "stop"
             if self.config.print_trace:
                 traceback.print_exc()
@@ -254,10 +245,7 @@ class Framework(object):
                 if event is None:
                     self.logger.info("No new events - do nothing")
 
-                    if (
-                        self.event_queue.qsize() == 0
-                        and self.event_queue_hi.qsize() == 0
-                    ):
+                    if self.event_queue.qsize() == 0 and self.event_queue_hi.qsize() == 0:
                         self.logger.info(f"No pending events or actions, terminating")
                         self.keep_going = False
                         if self.queue_manager is not None:
@@ -271,12 +259,17 @@ class Framework(object):
                 self.execute(action, self.context)
                 if self.context.state == "stop":
                     break
+            except BrokenPipeError as bpe:
+                self.logger.error(f"Failed to get retrieve events. Queue may be closed.")
+                break
             except Exception as e:
                 self.logger.error(f"Exception while processing action {action}, {e}")
                 if self.config.print_trace:
                     traceback.print_exc()
                 break
         self.keep_going = False
+        self.logger.info("Exiting main loop")
+        os._exit(0)
 
     def start_action_loop(self):
         """
@@ -353,7 +346,7 @@ class Framework(object):
             for f in files:
                 ds.append_item(f)
 
-        #for ditem in ds.data_table.index:
+        # for ditem in ds.data_table.index:
         #    self.logger.info("File ingestion: pushing next file event to the queue")
         #    self.event_queue.put(Event("next_file", Arguments(name=ditem)))
 
@@ -361,13 +354,7 @@ class Framework(object):
         if monitor:
             self.context.data_set.start_monitor()
 
-    def start(
-        self,
-        qm_only=False,
-        ingest_data_only=False,
-        wait_for_event=False,
-        continuous=False,
-    ):
+    def start(self, qm_only=False, ingest_data_only=False, wait_for_event=False, continuous=False):
         if qm_only:
             self.logger.info("Queue manager only mode, no processing")
             self.waitForEver()

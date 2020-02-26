@@ -25,18 +25,21 @@ class SavePng(BasePrimitive):
         BasePrimitive.__init__(self, action, context)
 
     def _perform(self):
+        fcfg = self.config.fits2png
         output_dir = self.config.output_directory
+        extension = fcfg.get("DEFAULT", "output_extension", fallback=".png").strip('"').strip("'")
+        output_format = fcfg.get("DEFAULT", "output_format", fallback="png").strip('"').strip("'")
         os.makedirs(output_dir, exist_ok=True)
         args = self.action.args
         name = os.path.basename(args.name)
 
         os.makedirs(output_dir, exist_ok=True)
-        out_name = output_dir + "/" + name.replace(".fits", ".png")
+        out_name = output_dir + "/" + name.replace(".fits", extension)
         img = args.img
         h, w = img.shape
         img1 = np.stack((img,) * 3, axis=-1)
 
-        plt.imsave(out_name, img1)
+        plt.imsave(out_name, img1, format=output_format)
 
         self.logger.info("Saved {}".format(out_name))
         out_args = Arguments(name=out_name)
