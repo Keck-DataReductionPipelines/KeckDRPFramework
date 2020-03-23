@@ -12,6 +12,7 @@ class Action(object):
         Action (eenvt_info, args)
         event_info: a tuple (action_name, state_name, next_event)
         args: Arguments (key1=val1, key2=val2, ...)
+
     """
 
     def __init__(self, event_info, args):
