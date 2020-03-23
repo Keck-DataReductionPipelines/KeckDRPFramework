@@ -7,7 +7,7 @@ Created on Jul 8, 2019
 from keckdrpframework.primitives.base_primitive import BasePrimitive
 
 
-class Template(BasePprimitive):
+class Template(BasePrimitive):
     """
     This is a template for primitives, which is usually an action.
     

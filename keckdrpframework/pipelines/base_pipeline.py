@@ -27,15 +27,15 @@ class BasePipeline:
             "echo": ("echo", "stop", None),
             "no_event": ("no_event", None, None),
             "info": ("info", None, None),
-            "ingest_only": ("ingest_only", None, None)
+            "ingest_only": ("ingest_only", None, None),
         }
-        
+
         self.context = context
         self.logger = context.logger
 
     def true(self, *args, **kargs):
         return True
-    
+
     def not_found(self, name):
         """
         When no action is found, this method builds a dummy function that 
@@ -78,7 +78,7 @@ class BasePipeline:
                     continue
                 out.append(c)
             return "".join(out)
-        
+
         def get_apply_method(mod_prefix, name):
             if self.context.debug:
                 self.context.logger.info(f"Importing mod {mod_prefix}, name {name}")
@@ -102,15 +102,15 @@ class BasePipeline:
             parts = full_name.split(".")
             last_part = parts[-1]
             package_name = ".".join(parts[:-1])
-            
+
             method = get_apply_method(full_name, to_camel_case(last_part))
             if method is not None:
-                return method            
-            
+                return method
+
             method = get_apply_method(package_name, last_part)
             if method is not None:
                 return method
-            
+
         self.logger.error(f"Exception while importing {last_part} from {prefixes}")
         return None
 
@@ -128,7 +128,7 @@ class BasePipeline:
             except Exception as e2:
                 if self.context.debug:
                     self.logger.warn(f"Name in {name} class ? {e2}")
-            
+
             # Is this name defined in this module ?
             if hasattr(sys.modules[self.__module__], name):
                 fn = getattr(sys.modules[self.__module__], name)
@@ -141,14 +141,14 @@ class BasePipeline:
             else:
                 if self.context.debug:
                     self.logger.warn(f"Not defined in module {name}")
-            
+
         # Action is a class
         if len(prefix) == 0:
             # pre, post conditions are implemented inside the class
             act_method = self._find_import_action(action)
             if act_method is not None:
                 return act_method
-                
+
         # Could not find the name for this action
         return None
 
