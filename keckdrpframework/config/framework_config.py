@@ -41,12 +41,16 @@ class ConfigClass(ConfigParser):
         "want_multiprocessing": False,
         "queue_manager_hostname": "localhost",
         "queue_manager_portnr": 50101,
-        "queue_manager_auth_code": b"a very long authentication code",
+        "queue_manager_auth_code": "a very long authentication code",
     }
 
     def __init__(self, cgfile=None, **kwargs):
         super(ConfigClass, self).__init__(kwargs)
         self.properties = self.config_defaults.copy()
+        if 'default_section' in kwargs:
+            self.default_section = kwargs['default_section']
+        else:
+            self.defatult_section = 'DEFAULT'
         if not cgfile is None:
             self.read(cgfile)
 
@@ -109,15 +113,14 @@ class ConfigClass(ConfigParser):
             return
         super().read(path)
 
-        self.properties.update(digestItems("DEFAULT", {}))
+        self.properties.update(digestItems(self.default_section, {}))
         sections = self.sections()
 
         for sec in sections:
             self.properties[sec] = digestItems(sec, self.properties)
 
     def __getattr__(self, key):
-        key = key.lower()
-        val = self.properties.get(key)
+        val = self.properties.get(key.lower())
         if val is not None:
             return val
 

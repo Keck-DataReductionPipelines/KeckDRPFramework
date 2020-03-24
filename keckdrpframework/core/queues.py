@@ -120,6 +120,7 @@ def start_queue_manager(hostname, portnr, auth_code):
     return p
 
 
+
 def get_event_queue(hostname, portnr, auth_code):
     """
     This functions gets the shared queue.
