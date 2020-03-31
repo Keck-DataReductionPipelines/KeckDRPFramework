@@ -19,10 +19,10 @@ len_kw or iter_kw, respectively.
 Indexing, however, can be used with either numbers or strings.
 Numerical indexes access positional arguments, while strings are
 treated as keywords.
+
 """
 
-
-class Arguments(object):
+class Arguments:
     """
     Arguments class
     Positional arguments are stored on an internal args list.
@@ -46,6 +46,9 @@ class Arguments(object):
         [out.append(f"{arg}") for arg in self._pos_args]
         [out.append(f"{k}: {v}") for k, v in self.__dict__.items() if k != '_pos_args']
         return ", ".join(out)
+      
+    def __repr__(self):
+        return self.__str__()
 
     def __getitem__(self, ix):
         if isinstance(ix, str):

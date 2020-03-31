@@ -5,7 +5,8 @@
 #
 import pytest
 import sys
-sys.path.append ("../..")
+
+sys.path.append("../..")
 
 
 from keckdrpframework.models.arguments import Arguments
@@ -36,7 +37,18 @@ def test_arguments_2():
 
     s = args.__str__()
 
-    assert s == "name: test, a: 1, b: 2, c: 3", "Arguments str() failed"
+    assert s == '"name": test, "a": 1, "b": 2, "c": 3', "Arguments str() failed"
+
+
+def test_positional_arguments():
+    args = Arguments(1, 2, 3, name="test")
+    assert args[2] == 3 and len(args) == 3, "Failed to initialize"
+    args.append(4)
+    args[3] = 42
+    assert args[3] == 42 and len(args) == 4, "Failed to set value"
+    args.pop()
+    assert len(args) == 3, "Failed to pop"
+    assert sum(args) == 6, "Failed to iterate"
 
 def test_arguments_3():
     args = Arguments(4, 7, 19, name="test", a=1, c="3")
