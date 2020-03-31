@@ -40,19 +40,9 @@ def test_arguments_2():
     assert s == '"name": test, "a": 1, "b": 2, "c": 3', "Arguments str() failed"
 
 
-def test_positional_arguments():
-    args = Arguments(1, 2, 3, name="test")
-    assert args[2] == 3 and len(args) == 3, "Failed to initialize"
-    args.append(4)
-    args[3] = 42
-    assert args[3] == 42 and len(args) == 4, "Failed to set value"
-    args.pop()
-    assert len(args) == 3, "Failed to pop"
-    assert sum(args) == 6, "Failed to iterate"
-
 def test_arguments_3():
     args = Arguments(4, 7, 19, name="test", a=1, c="3")
-    assert args[0] == 4 and args[2] == 19 and args['a'] == 1, "Arguments: constructor failed"
+    assert args[0] == 4 and args[2] == 19 and args["a"] == 1, "Arguments: constructor failed"
 
     assert len(args) == 3, f"Arguments: len returns wrong value ({len(args)}, should be 3)"
     args_iter = iter(args)
@@ -66,7 +56,7 @@ def test_arguments_3():
         assert False, "Arguments: unexpected exception on iteration"
     else:
         assert False, "Arguments: Expected StopIteration exception not raised"
-    
+
     assert args.len_kw() == 3, f"Arguments: len_kw returns wrong value ({args.len_kw()}, should be 3"
     args_iter_kw = args.iter_kw()
     val = next(args_iter_kw)
@@ -96,7 +86,7 @@ def test_arguments_3():
     args.extend(5, 6, 7)
     assert len(args) == 7 and args[4] == 5 and args[6] == 7, "Arguments: extend failed"
 
-    args.update(d= "D", e="E")
+    args.update(d="D", e="E")
     assert args.len_kw() == 5 and args.d == "D", "Arguments: update failed"
 
 

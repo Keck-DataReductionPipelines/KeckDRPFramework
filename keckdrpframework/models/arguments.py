@@ -22,6 +22,7 @@ treated as keywords.
 
 """
 
+
 class Arguments:
     """
     Arguments class
@@ -39,14 +40,14 @@ class Arguments:
         self._pos_args = []
         self._pos_args.extend(args)
         self.__dict__.update(kwargs)
-    
+
     # access all items
     def __str__(self):
         out = []
-        [out.append(f"{arg}") for arg in self._pos_args]
-        [out.append(f"{k}: {v}") for k, v in self.__dict__.items() if k != '_pos_args']
+        out.extend([f"{i}: {arg}" for i, arg in enumerate(self._pos_args)])
+        out.extend([f'"{k}": {v}' for k, v in self.__dict__.items() if k != "_pos_args"])
         return ", ".join(out)
-      
+
     def __repr__(self):
         return self.__str__()
 
@@ -54,7 +55,7 @@ class Arguments:
         if isinstance(ix, str):
             return self.__dict__.__getitem__(ix)
         return self._pos_args.__getitem__(ix)
-    
+
     def __setitem__(self, ix, val):
         if isinstance(ix, str):
             self.__dict__.__setitem__(ix, val)
@@ -73,7 +74,7 @@ class Arguments:
         iterator of positional arguments
         """
         return iter(self._pos_args)
-    
+
     def insert(self, ix, val):
         """
         insert a positional argument before ix
@@ -85,7 +86,7 @@ class Arguments:
         append a positional argument at the end
         """
         self._pos_args.append(val)
-    
+
     def pop(self):
         """
         return and remove the last positional argument
@@ -105,7 +106,7 @@ class Arguments:
         excludes the internally used '_pos_args'
         """
         for k in self.__dict__.keys():
-            if k == '_pos_args':
+            if k == "_pos_args":
                 continue
             yield k
 
