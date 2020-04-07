@@ -41,7 +41,7 @@ if __name__ == "__main__":
     if queues.get_event_queue(hostname, portnr, auth_code) is not None:
         print("Queue Manager is already running\n")
     else:
-        queue = queues.start_queue_manager(hostname, portnr, auth_code)
+        queue = queues.start_queue_manager(hostname, portnr, auth_code, logger=None)
 
         print(f"Hostname = {hostname}\nPort nr = {portnr}\n")
         print("Started Queue Manager.")

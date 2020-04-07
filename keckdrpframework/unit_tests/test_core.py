@@ -12,7 +12,6 @@ from keckdrpframework.models.event import Event
 from keckdrpframework.models.processing_context import ProcessingContext
 from keckdrpframework.models.data_set import DataSet
 
-from keckdrpframework.utils.drpf_logger import getLogger
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.queues import SimpleEventQueue, get_event_queue, QueueServer, _get_queue_manager, start_queue_manager
 
@@ -44,7 +43,7 @@ def test_simple_queue():
 
 def test_start_queue_server():
     # Start Queue manager process, which will host the shared queue
-    res = start_queue_manager(QueueHost, QueuePortNr, QueueAuthCode)
+    res = start_queue_manager(QueueHost, QueuePortNr, QueueAuthCode, logger=None)
     assert res, "Could not create queue manager"
 
 
@@ -54,7 +53,7 @@ def test_shared_queue_producer():
     assert queue is not None, "Failed to connect to queue manager"
 
     for cnt in range(NItems):
-        queue.put(f"Item {cnt}")
+        queue.put(Event(f"Item {cnt}", None))
 
 
 def test_shared_queue_consumer():
@@ -68,7 +67,7 @@ def test_shared_queue_consumer():
     while ok:
         try:
             item = queue.get(block=False, timeout=3)
-        except:
+        except Exception as e:
             ok = False
             break
         if item is not None:

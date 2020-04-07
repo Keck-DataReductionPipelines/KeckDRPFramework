@@ -9,7 +9,6 @@ This is the base pipeline.
 import sys
 import re
 import importlib
-from keckdrpframework.utils.drpf_logger import getLogger
 from keckdrpframework.models.arguments import Arguments
 
 
