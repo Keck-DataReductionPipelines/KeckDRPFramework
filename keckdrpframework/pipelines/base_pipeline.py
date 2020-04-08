@@ -7,7 +7,7 @@ This is the base pipeline.
 """
 
 import sys
-import re
+import time
 import importlib
 from keckdrpframework.models.arguments import Arguments
 
@@ -200,7 +200,9 @@ class BasePipeline:
         """
         The no_event event.
         """
-        self.logger.info("No event in queue")
+        wait_time = min(30, max(5, self.context.config.no_event_wait_time))
+        self.logger.info(f"No event in queue, waiting {wait_time} s before continuing")
+        time.sleep (wait_time)
 
     def _event_to_action(self, event, context):
         """

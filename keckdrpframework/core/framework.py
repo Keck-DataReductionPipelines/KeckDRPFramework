@@ -133,7 +133,7 @@ class Framework(object):
         if want_multi:
             return self._get_queue_manager(cfg)
 
-        return queues.MultiprocEventQueue()
+        return queues.SimpleEventQueue()
 
     def get_event(self):
         """
@@ -144,9 +144,9 @@ class Framework(object):
         """
         try:
             try:
-                return self.event_queue_hi.get_nowait()
+                return self.event_queue_hi.get(block=False)
             except:
-                ev = self.event_queue.get(True, self.config.event_timeout)
+                ev = self.event_queue.get(block=True, timeout=self.config.event_timeout)
                 self.wait_for_event = False
                 return ev
         except Exception as e:
@@ -263,7 +263,7 @@ class Framework(object):
                             try:
                                 self.event_queue.terminate()
                             except:
-                                pass
+                                pass                   
                     continue
 
                 action = self.event_to_action(event, self.context)
@@ -323,14 +323,14 @@ class Framework(object):
         except:
             pass
 
-    def waitForEver(self):
+    def wait_for_ever(self):
         """
         Because the action loops runs in a thread, this methods waits until keep_going is false.         
         """
         while self.keep_going:
             time.sleep(1)
 
-    def getPendingEvents(self):
+    def get_pending_events(self):
         return self.event_queue.get_pending(), self.event_queue_hi.get_pending()
 
     #
@@ -362,7 +362,7 @@ class Framework(object):
     def start(self, qm_only=False, ingest_data_only=False, wait_for_event=False, continuous=False):
         if qm_only:
             self.logger.info("Queue manager only mode, no processing")
-            self.waitForEver()
+            self.wait_for_ever()
         else:
             if ingest_data_only:
                 # Release the queue
@@ -373,7 +373,7 @@ class Framework(object):
                 self.wait_for_event = wait_for_event
                 self._start()
                 self.logger.info("Framework main loop started")
-                self.waitForEver()
+                self.wait_for_ever()
 
 
 def find_pipeline(pipeline_name, pipeline_path, context, logger):

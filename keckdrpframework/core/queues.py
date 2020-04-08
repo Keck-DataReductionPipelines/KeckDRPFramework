@@ -33,38 +33,19 @@ Shared objects must be 'pickleable'.
 import os
 import queue
 import time
+import copy
 import traceback
 from multiprocessing.managers import BaseManager
 from multiprocessing import Process
 
-
-class SimpleEventQueue(queue.Queue):
+class SimpleEventQueue:
     """
-    Just subclass queue.Queue
-    Operations are get() and put()
-    """
-
-    def __init__(self, *args, **kargs):
-        """
-        Constructor
-        """
-        queue.Queue.__init__(self, *args)
-
-    def get_pending(self):
-        """
-        Returns a copy of the queue's content
-        """
-        return list(self.queue)
-
-
-class MultiprocEventQueue:
-    """
-    This class represents the event queue in multiprocessing mode.
+    This class represents the event queue in in both single process and multi-processing modes.
     
-    The event queue is the FIFO queue.
+    The event queue is the FIFO queue, the Python standard queue.Queue().
     The framework code takes events from this queue and calls the associated action.
 
-    The dictionary in_progress contains events that are in progress.
+    The dictionary 'in_progress' contains events that are in progress.
     When an event is taken from the event queue, that event is added to in_progress.
     If the event is handled successfully, the event is removed from in_progress,
     unless it is a recurrent event. In that case, the event is re-inserted to the queue.
@@ -88,7 +69,7 @@ class MultiprocEventQueue:
         self._in_progress[event.id] = event
         return event
 
-    def qsize(self):
+    def qsize(self):        
         return self.queue.qsize()
 
     def terminate(self):
@@ -114,7 +95,7 @@ class MultiprocEventQueue:
         """
         Returns a copy of the queue's content
         """
-        return list(self.queue)
+        return list (self.queue.queue)
 
 class QueueServer(BaseManager):
     pass
@@ -140,7 +121,7 @@ def _queue_manager_target(hostname, portnr, auth_code, logger):
     This should be spawn as a process and run in the background.  
     """
     try:
-        queue = MultiprocEventQueue()
+        queue = SimpleEventQueue()
         QueueServer.register("get_queue", callable=lambda: queue)
 
         manager = QueueServer(address=(hostname, portnr), authkey=auth_code)

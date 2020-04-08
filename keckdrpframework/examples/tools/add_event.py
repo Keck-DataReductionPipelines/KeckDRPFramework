@@ -9,6 +9,10 @@ Created on 2020-01-07
 import sys
 import argparse
 import socket
+
+from toolHelper import import_module
+import_module ("keckdrpframework")
+
 from keckdrpframework.models.event import Event
 from keckdrpframework.models.arguments import Arguments
 from keckdrpframework.core import queues
@@ -22,6 +26,9 @@ def _parseArguments(in_args):
 
     parser = argparse.ArgumentParser(prog=f"{in_args[0]}", description=description, usage=usage, epilog=epilog)
     parser.add_argument("-c", "--config", dest="config_file", type=str, help="Configuration file")
+    
+    parser.add_argument("-H", "--host", dest="hostname", type=str, help="Host name")
+    parser.add_argument("-p", "--port", dest="portnr", type=str, help="Port number")
     parser.add_argument(dest="event_name", type=str, help="Event name")
     parser.add_argument(dest="event_argument", type=str, help="Event argument")
     try:
@@ -34,16 +41,15 @@ def _parseArguments(in_args):
 if __name__ == "__main__":
     args = _parseArguments(sys.argv)
     cfg = ConfigClass(args.config_file)
-    hostname = cfg.queue_manager_hostname
-    portnr = cfg.queue_manager_portnr
+    
+    cfg.properties['want_multiprocessing'] = True
+    hostname = cfg.queue_manager_hostname if args.hostname is None else args.hostname
+    portnr = cfg.queue_manager_portnr if args.portnr is None else args.portnr
     auth_code = cfg.queue_manager_auth_code
-
-    if hostname == "localhost":
-        hostname = socket.gethostname()
-
+    
     queue = queues.get_event_queue(hostname, portnr, auth_code)
     print("Event queue:")
-    print(f"Hostname = {hostname}\nPort nr = {portnr}\nAuth code = {auth_code}")
+    print(f"Hostname = {hostname}\nPort nr = {portnr}\n")
 
     if queue is None:
         print("Failed to connect to Queue Manager")

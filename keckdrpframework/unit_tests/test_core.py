@@ -33,12 +33,12 @@ QueueManager = None
 def test_simple_queue():
     eq = SimpleEventQueue()
     for i in range(5):
-        eq.put(Arguments(name="test", i=i))
+        eq.put(Event("test event", Arguments(name="test argument", i=i)))
     assert eq.qsize() == 5, "Size mismatch"
 
-    a1 = eq.get()
-    a2 = eq.get()
-    assert a2.i == 1, "Wrong element queue"
+    e1 = eq.get()
+    e2 = eq.get()
+    assert e2.args.i == 1, "Wrong event argument"
 
 
 def test_start_queue_server():
