@@ -53,4 +53,5 @@ if __name__ == "__main__":
         pending = queue.get_pending()
         for i, elem in enumerate(pending):
             print (f"Event #{i}: {elem}")
+            
 
