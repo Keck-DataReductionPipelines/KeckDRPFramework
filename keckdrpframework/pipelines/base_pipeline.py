@@ -24,6 +24,8 @@ class BasePipeline:
         context is model.processing_context.
         """
 
+        # Entries are:
+        # name: ("action_name", "new state", "next event")
         self.event_table0 = {
             "noop": ("noop", None, None),
             "echo": ("echo", "stop", None),

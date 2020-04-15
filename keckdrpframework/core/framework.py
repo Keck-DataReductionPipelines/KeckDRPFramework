@@ -191,7 +191,7 @@ class Framework(object):
         """
         event_info = self.pipeline.event_to_action(event, context)
         self.logger.info(f"Event to action {event_info}")
-        return Action(event_info, args=event.args)
+        return Action(event, event_info, args=event.args)
 
     def execute(self, action, context):
         """
@@ -210,6 +210,7 @@ class Framework(object):
                 # Run action
                 action_output = pipeline.get_action(
                     action_name)(action, context)
+                action.output = action_output
                 if action_output is not None:
                     self.store_arguments = action_output
 
@@ -241,18 +242,19 @@ class Framework(object):
             if self.config.print_trace:
                 traceback.print_exc()
     
-    def _action_completed (self, successful, event, action):
+    def _action_completed (self, successful, action):
+        event = action.event
         id = event.id
         try:
             argname = event.args.name
         except:
             argname = "Undef"
-        self.logger.info (f"Event completed: name {event.name}, action {action.name}, arg name {argname}")
-        try:
+        self.logger.info (f"Event completed: name {event.name}, action {action.name}, arg name {argname}, recurr {event._recurrent}")
+        try:                        
             if self.event_queue.get_in_progress().get(id):
-                ev = self.event_queue.discard (id)
-                if ev._recurrent:
-                    self.append_event(ev.name, ev.args, ev._recurrent)
+                self.event_queue.discard (id)
+                if event._recurrent:
+                    self.append_event(event.name, event.args, event._recurrent)
             elif self.event_queue_hi.get_in_progress().get(id):
                 self.event_queue_hi.discard(id)
         except Exception as e: 
@@ -299,7 +301,7 @@ class Framework(object):
                     f"Exception while processing action {action}, {e}")
                 if self.config.print_trace:
                     traceback.print_exc()
-            self._action_completed (success, event, action)
+            self._action_completed (success, action)
             
         self.keep_going = False
         self.logger.info("Exiting main loop")

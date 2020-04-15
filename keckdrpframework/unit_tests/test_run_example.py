@@ -28,7 +28,7 @@ def init_framework ():
     f = Framework(Fits2pngPipeline, "example_config.cfg")    
     assert f is not None, "Could not create framework"
     
-    f.config.no_event_event = None #Event("no_event", None)
+    f.config.no_event_event = None # Make sure the loop terminates
     f.config.fits2png = ConfigClass ("../examples/fits2png.cfg")
     return f
 
