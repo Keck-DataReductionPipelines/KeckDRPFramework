@@ -97,6 +97,12 @@ class SimpleEventQueue:
         """
         return list (self.queue.queue)
 
+    def get_in_progress (self):
+        """
+        Returns the in_progress dict
+        """
+        return self._in_progress
+
 class QueueServer(BaseManager):
     pass
 
@@ -139,13 +145,15 @@ def _queue_manager_target(hostname, portnr, auth_code, logger):
 def start_queue_manager(hostname, portnr, auth_code, logger):
     """
     Starts the queue manager process.
-    """
+    """    
     p = Process(target=_queue_manager_target, args=(hostname, portnr, auth_code, logger))
     p.start()
     for i in range (10):
         time.sleep(2)
         if get_event_queue (hostname, portnr, auth_code) is not None:
             break
+    else:
+        logger.info (f"Queue ready {i}")
     return p
 
 

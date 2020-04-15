@@ -5,6 +5,7 @@
 #
 import pytest
 import sys
+import logging
 sys.path.append ("../..")
 
 from keckdrpframework.models.arguments import Arguments
@@ -43,7 +44,7 @@ def test_simple_queue():
 
 def test_start_queue_server():
     # Start Queue manager process, which will host the shared queue
-    res = start_queue_manager(QueueHost, QueuePortNr, QueueAuthCode, logger=None)
+    res = start_queue_manager(QueueHost, QueuePortNr, QueueAuthCode, logger=logging.getLogger())
     assert res, "Could not create queue manager"
 
 

@@ -14,7 +14,9 @@ def test_clean_up():
         for f in flist:
             os.unlink(f)
 
-    if os.path.exists("output"):
-        remove(glob.glob("output/*.png"))
+    if os.path.exists("output"):        
         remove(glob.glob("output/*.jpg"))
         os.rmdir("output")
+        
+    if os.path.exists("DRPF.log"):
+        os.unlink ("DRPF.log")

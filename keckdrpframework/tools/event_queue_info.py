@@ -29,7 +29,7 @@ def _parseArguments(in_args):
     try:
         return parser.parse_args(in_args[1:])
     except:
-        parser.print_help()
+        #parser.print_help()
         sys.exit(0)
 
 
@@ -53,5 +53,11 @@ if __name__ == "__main__":
         pending = queue.get_pending()
         for i, elem in enumerate(pending):
             print (f"Event #{i}: {elem}")
+
+        print ("In progress:")
+        in_progress = queue.get_in_progress()
+        for i, (id, evt) in enumerate(in_progress.items()):
+            print (f"Event #{i}: {evt.name}, {evt.args}")
+
             
 

@@ -171,13 +171,13 @@ class Framework(object):
         self.logger.info(f"Push event {event_name}, {args.name}")
         self.event_queue_hi.put(Event(event_name, args))
 
-    def append_event(self, event_name, args):
+    def append_event(self, event_name, args, recurrent=False):
         """
         Appends low priority event to the end of the queue
         """
         if args is None:
             args = self.store_arguments
-        self.event_queue.put(Event(event_name, args))
+        self.event_queue.put(Event(event_name, args, recurrent))
 
     def event_to_action(self, event, context):
         """
@@ -240,6 +240,23 @@ class Framework(object):
             context.state = "stop"
             if self.config.print_trace:
                 traceback.print_exc()
+    
+    def _action_completed (self, successful, event, action):
+        id = event.id
+        try:
+            argname = event.args.name
+        except:
+            argname = "Undef"
+        self.logger.info (f"Event completed: name {event.name}, action {action.name}, arg name {argname}")
+        try:
+            if self.event_queue.get_in_progress().get(id):
+                ev = self.event_queue.discard (id)
+                if ev._recurrent:
+                    self.append_event(ev.name, ev.args, ev._recurrent)
+            elif self.event_queue_hi.get_in_progress().get(id):
+                self.event_queue_hi.discard(id)
+        except Exception as e: 
+            self.logger.error (f"Exception occured while in _action_completed, {e}")
 
     def main_loop(self):
         """
@@ -248,9 +265,11 @@ class Framework(object):
         This method can be called directly to run in the main thread.
         To run in a thread, use start_action_loop(). 
         """
+        success = False        
         while self.keep_going:
             try:
                 action = ""
+                success = False
                 event = self.get_event()
                 if event is None:
                     self.logger.info("No new events - do nothing")
@@ -268,6 +287,7 @@ class Framework(object):
 
                 action = self.event_to_action(event, self.context)
                 self.execute(action, self.context)
+                success = True
                 if self.context.state == "stop":
                     break
             except BrokenPipeError as bpe:
@@ -279,16 +299,20 @@ class Framework(object):
                     f"Exception while processing action {action}, {e}")
                 if self.config.print_trace:
                     traceback.print_exc()
-                break
+            self._action_completed (success, event, action)
+            
         self.keep_going = False
         self.logger.info("Exiting main loop")
-        os._exit(0)
+
+    def _main_loop_helper (self):
+        self.main_loop ()
+        self.on_exit(0)
 
     def start_action_loop(self):
         """
         This is a thread running the action loop.
         """
-        thr = threading.Thread(name="action_loop", target=self.main_loop)
+        thr = threading.Thread(name="action_loop", target=self._main_loop_helper)
         thr.setDaemon(True)
         thr.start()
 
@@ -374,6 +398,9 @@ class Framework(object):
                 self._start()
                 self.logger.info("Framework main loop started")
                 self.wait_for_ever()
+
+    def on_exit (self, status=0):
+        os._exit(status)
 
 
 def find_pipeline(pipeline_name, pipeline_path, context, logger):

@@ -14,19 +14,21 @@ from keckdrpframework.models.arguments import Arguments
 
 class BasePipeline:
     """
-    classdocs
+    This is the base pipeline. 
+    All pipelines should be subclassed from this class.
     """
 
     def __init__(self, context):
         """
-        Constructor
+        BasePipeline constructor.
+        context is model.processing_context.
         """
+
         self.event_table0 = {
             "noop": ("noop", None, None),
             "echo": ("echo", "stop", None),
             "no_event": ("no_event", None, None),
             "info": ("info", None, None),
-            "ingest_only": ("ingest_only", None, None),
         }
 
         self.context = context
@@ -37,8 +39,11 @@ class BasePipeline:
 
     def not_found(self, name):
         """
+        Builds a fake action.
         When no action is found, this method builds a dummy function that 
         returns a dummy arguments. 
+
+        Returns a function that returns an Arguments class.
         """
 
         def f(action, context, **kargs):
@@ -49,6 +54,7 @@ class BasePipeline:
 
     def _get_action_apply_method(self, klass):
         """
+        Helper function.
         Returns a function that instantiates the klass and calls apply()
         """
 
@@ -60,6 +66,7 @@ class BasePipeline:
 
     def _find_import_action(self, module_name):
         """
+        Helper function to find class the matches the given module name.
         module_name is same as file name.
         For example: class abc is defined in primitives.abc.
         """
@@ -115,6 +122,7 @@ class BasePipeline:
 
     def _get_action(self, prefix, action):
         """
+        Helper function to find the given action.
         Returns a function for the given action name or true() if not found
         """
         parts = action.split(".")
@@ -152,48 +160,53 @@ class BasePipeline:
         return None
 
     def get_pre_action(self, action):
+        """
+        Returns the pre_condition.
+        """
         f = self._get_action("pre_", action)
         if f is None:
             return self.true
         return f
 
     def get_post_action(self, action):
+        """
+        Returns the post_condition
+        """
         f = self._get_action("post_", action)
         if f is None:
             return self.true
         return f
 
     def get_action(self, action):
+        """
+        Finds and returns the action, as a function.
+        """
         f = self._get_action("", action)
         if f is None:
             return self.not_found(action)
         return f
 
     def noop(self, action, context):
+        """
+        One of the default actions.
+        """
         # self.logger.info ("NOOP action")
         return action.args
 
     def info(self, action, context):
+        """
+        One of the default actions.
+        Useful for testing.
+        """
         pending_events = context.event_queue.get_pending()
         self.logger.info("Pending events " + str(pending_events))
-
-    def no_more_action(self, action, context):
-        self.logger.info("No more action, terminating")
+        return action.args
 
     def echo(self, action, context):
         """
         Test action 'echo'
         """
         self.logger.info(f"Echo action {action}")
-
-    def ingest_only(self, action, context):
-        """
-        Standard ingestion event, no action triggered
-        :param action:
-        :param context:
-        :return:
-        """
-        self.logger.info("File ingestion event")
         return action.args
 
     def no_event(self, action, context):
@@ -202,10 +215,12 @@ class BasePipeline:
         """
         wait_time = min(30, max(5, self.context.config.no_event_wait_time))
         self.logger.info(f"No event in queue, waiting {wait_time} s before continuing")
-        time.sleep (wait_time)
+        time.sleep (wait_time)        
+        return action.args
 
-    def _event_to_action(self, event, context):
+    def _event_to_action(self, event, context):        
         """
+        Lookup function helper.
         Returns the event_info as (action, state, next_event)
         """
         event_info = self.event_table0.get(event.name)
@@ -216,10 +231,14 @@ class BasePipeline:
 
     def event_to_action(self, event, context):
         """
+        Lookup function.
         Checks the local event_table, 
-        if no matching event found, then checks the table0.
+        if no matching event found, then checks the default actions in table0.
         """
-        event_info = self.event_table.get(event.name)
-        if not event_info is None:
-            return event_info
+        try:
+            event_info = self.event_table.get(event.name)
+            if not event_info is None:
+                return event_info
+        except:
+            pass
         return self._event_to_action(event, context)
