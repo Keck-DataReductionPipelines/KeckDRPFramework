@@ -3,6 +3,24 @@ Created on Jul 8, 2019
 
 This is the base pipeline.
 
+The event table (or event_table0) has entries like:
+    event_name: ("action_name", "new_state", "next_event")
+
+action_name is a string. 
+if action_name is a simple name, ie no packages:
+    
+    action_name is a method in this class or subclass
+    then use that method.
+
+    action_name is a function in this module,
+    then use that function.
+
+    action_name is a class, defined in this module,
+    then use the apply() method of that class
+
+action_name is a class, and name has packages,
+then use the apply() method of that class.
+
 @author: skwok
 """
 
