@@ -56,11 +56,9 @@ class BasePrimitive:
         if self._pre_condition():
             self.output = self._perform()
             if self._post_condition():
-                return None
-            return self.output
-        else:
-            return None
-
+                return self.output
+        return None
+        
     def __call__(self):
         """
         Makes objects of this calls callable.
