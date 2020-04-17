@@ -139,7 +139,6 @@ def _queue_manager_target(hostname, portnr, auth_code, logger):
 
     if logger is not None:
         logger.info ("Queue manager process terminated")
-    print ("Terminating manager process")
 
 
 def start_queue_manager(hostname, portnr, auth_code, logger):
@@ -153,7 +152,7 @@ def start_queue_manager(hostname, portnr, auth_code, logger):
         if get_event_queue (hostname, portnr, auth_code) is not None:
             break
     else:
-        logger.info (f"Queue ready {i}")
+        logger.debug (f"Queue ready {i}")
     return p
 
 

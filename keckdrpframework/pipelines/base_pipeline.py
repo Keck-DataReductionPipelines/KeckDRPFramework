@@ -53,6 +53,7 @@ class BasePipeline:
 
         self.context = context
         self.logger = context.logger
+        self.config = context.config
 
     def true(self, *args, **kargs):
         return True
@@ -106,8 +107,7 @@ class BasePipeline:
             return "".join(out)
 
         def get_apply_method(mod_prefix, name):
-            if self.context.debug:
-                self.context.logger.info(f"Importing mod {mod_prefix}, name {name}")
+            self.context.logger.debug(f"Importing mod {mod_prefix}, name {name}")
             try:
                 mod = importlib.import_module(mod_prefix)
                 if hasattr(mod, name):
@@ -137,7 +137,8 @@ class BasePipeline:
             if method is not None:
                 return method
 
-        self.logger.error(f"Exception while importing {last_part} from {prefixes}")
+        if self.config.print_trace:
+            self.logger.error(f"Exception while importing {last_part} from {prefixes}")
         return None
 
     def _get_action(self, prefix, action):
@@ -153,8 +154,8 @@ class BasePipeline:
                 # Checks if method defined in the class
                 return self.__getattribute__(name)
             except Exception as e2:
-                if self.context.debug:
-                    self.logger.warn(f"Name in {name} class ? {e2}")
+                if self.config.print_trace:
+                    self.logger.debug(f"Name in {name} class ? {e2}")
 
             # Is this name defined in this module ?
             if hasattr(sys.modules[self.__module__], name):
@@ -166,8 +167,8 @@ class BasePipeline:
                 # name is a function, return it
                 return fn
             else:
-                if self.context.debug:
-                    self.logger.warn(f"Not defined in module {name}")
+                if self.config.print_trace:
+                    self.logger.debug(f"Not defined in module {name}")
 
         # Action is a class
         if len(prefix) == 0:

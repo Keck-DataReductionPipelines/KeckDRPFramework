@@ -34,7 +34,7 @@ class BaseCcdPrimitive(Base_img):
             files = df[df.IMTYPE == args.want_type]
             nfiles = len(files)
 
-            self.logger.info(f"pre condition got {nfiles}, expecting {args.min_files}")
+            self.logger.debug(f"pre condition got {nfiles}, expecting {args.min_files}")
             if nfiles < 1 or nfiles < args.min_files:
                 return False
             return True
@@ -84,5 +84,5 @@ def process_flat(action, context):
     img = args.hdus[0].data
     name = args.name
     minV, maxV, std = img.min(), img.max(), img.std()
-    context.logger.info(f"{name}, min={minV}, max={maxV}, std={std}")
+    context.logger.debug(f"{name}, min={minV}, max={maxV}, std={std}")
     return Arguments(name="OK")

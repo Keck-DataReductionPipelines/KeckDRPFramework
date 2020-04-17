@@ -72,6 +72,8 @@ class Framework(object):
             self.config = configFile
 
         self.logger = getLogger(self.config.logger_config_file, name="DRPF")
+        self.logger.info ("")
+        self.logger.info ("Initialization Framework cwd={}".format(os.getcwd()))
 
         self.wait_for_event = False
         # The high priority event queue is local to the process
@@ -109,15 +111,15 @@ class Framework(object):
         portnr = cfg.queue_manager_portnr
         auth_code = cfg.queue_manager_auth_code
 
-        self.logger.info(
+        self.logger.debug(
             f"Getting shared event queue from {hostname}:{portnr}")
         queue = queues.get_event_queue(hostname, portnr, auth_code)
         if queue is None:
-            self.logger.info("Starting Queue Manager")
+            self.logger.debug("Starting Queue Manager")
             self.queue_manager = queues.start_queue_manager(hostname, portnr, auth_code, self.logger)
             queue = queues.get_event_queue(hostname, portnr, auth_code)
             if queue is not None:
-                self.logger.info("Got event queue from Queue Manager")
+                self.logger.debug("Got event queue from Queue Manager")
             return queue
         else:
             return queue
@@ -168,7 +170,7 @@ class Framework(object):
         This method is only used in execute.
 
         """
-        self.logger.info(f"Push event {event_name}, {args.name}")
+        self.logger.debug(f"Push event {event_name}, {args.name}")
         self.event_queue_hi.put(Event(event_name, args))
 
     def append_event(self, event_name, args, recurrent=False):
@@ -190,7 +192,7 @@ class Framework(object):
 
         """
         event_info = self.pipeline.event_to_action(event, context)
-        self.logger.info(f"Event to action {event_info}")
+        self.logger.debug(f"Event to action {event_info}")
         return Action(event, event_info, args=event.args)
 
     def execute(self, action, context):
@@ -205,7 +207,7 @@ class Framework(object):
             # Pre condition
             if pipeline.get_pre_action(action_name)(action, context):
                 if self.config.print_trace:
-                    self.logger.info("Executing action " + action.name)
+                    self.logger.debug("Executing action " + action.name)
 
                 # Run action
                 action_output = pipeline.get_action(
@@ -226,7 +228,7 @@ class Framework(object):
                         context.state = action.next_state
 
                     if self.config.print_trace:
-                        self.logger.info("Action " + action.name + " done")
+                        self.logger.debug("Action " + action.name + " done")
                     return
                 else:
                     # Post-condition failed
@@ -274,10 +276,10 @@ class Framework(object):
                 success = False
                 event = self.get_event()
                 if event is None:
-                    self.logger.info("No new events - do nothing")
+                    self.logger.debug("No new events - do nothing")
 
                     if self.event_queue.qsize() == 0 and self.event_queue_hi.qsize() == 0:
-                        self.logger.info(
+                        self.logger.debug(
                             f"No pending events or actions, terminating")
                         self.keep_going = False
                         if self.queue_manager is not None:
@@ -455,9 +457,9 @@ def find_pipeline(pipeline_name, pipeline_path, context, logger):
             klass = getattr(module, to_camel_case(last_name))
             if klass is not None:
                 return klass(context)
-    except Exception as me:
-        logger.info(f"failed loading as string {pipeline_name}")
-        logger.info(f"Trying {pipeline_path} next")
+    except Exception as me:        
+        logger.debug(f"Failed loading as string {pipeline_name}")
+        logger.debug(f"Trying {pipeline_path} next")
 
     if pipeline_path is None:
         pipeline_path = ("",)
@@ -471,14 +473,14 @@ def find_pipeline(pipeline_name, pipeline_path, context, logger):
             if hasattr(module, class_name):
                 klass = getattr(module, class_name)
                 if klass is not None:
-                    logger.info(f"Found {class_name} in {full_name}")
+                    logger.debug(f"Found {class_name} in {full_name}")
                     break
-            logger.info(f"Class {class_name} not in {full_name}")
+            logger.debug(f"Class {class_name} not in {full_name}")
         except ModuleNotFoundError as me:
-            logger.info(f"Failed loading pipeline {full_name}, {me}")
+            logger.debug(f"Failed loading pipeline {full_name}, {me}")
             continue
         except Exception as e:
-            logger.info(f"Exception {e}")
+            logger.error(f"Exception {e}")
             break
 
     if klass is not None:

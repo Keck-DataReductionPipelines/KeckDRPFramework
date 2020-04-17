@@ -45,7 +45,7 @@ class CreateContactSheetHTML(BasePrimitive):
         dir_name = args.dir_name
         out_name = args.out_name
         pattern = args.pattern
-        self.logger.info(f"Creating contact sheet in {dir_name}, out_name={out_name}")
+        self.logger.debug(f"Creating contact sheet in {dir_name}, out_name={out_name}")
 
         flist = sorted(glob.glob(dir_name + "/" + pattern))
 

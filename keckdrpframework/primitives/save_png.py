@@ -41,6 +41,6 @@ class SavePng(BasePrimitive):
 
         plt.imsave(out_name, img1, format=output_format)
 
-        self.logger.info("Saved {}".format(out_name))
+        self.logger.debug("Saved {}".format(out_name))
         out_args = Arguments(name=out_name)
         return out_args

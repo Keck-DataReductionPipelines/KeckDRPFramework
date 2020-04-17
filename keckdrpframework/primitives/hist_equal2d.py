@@ -113,9 +113,9 @@ class HistEqual2d(BasePrimitive):
         sum1 = np.sum(histg[lo_idx:hi_idx])
         thold = sum1 / (hi_idx - lo_idx) * self.t_factor
         thold = max(leng / n_hist, thold)
-        self.logger.info(f"min thold={leng/n_hist:.2f}, sum1={sum1:.1f}, diff={(hi_idx-lo_idx):.0f}")
+        self.logger.debug(f"min thold={leng/n_hist:.2f}, sum1={sum1:.1f}, diff={(hi_idx-lo_idx):.0f}")
 
-        self.logger.info(f"Hist eq. lo={from_lo:.1f}, hi={from_hi:.1f}, cen={cen:.0f}, std={cstd:.1f}, thold={thold:.1f}")
+        self.logger.debug(f"Hist eq. lo={from_lo:.1f}, hi={from_hi:.1f}, cen={cen:.0f}, std={cstd:.1f}, thold={thold:.1f}")
         return self._applyAHEqHelper(flatData, leng, from_lo, from_hi, 0, n_hist - 1, n_hist, thold)
 
     def _applyAHEq(self, img):

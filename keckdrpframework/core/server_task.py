@@ -1,5 +1,6 @@
 """
 @ Deprecated, skwok, April 6, 2020
+Marked for removal.
 
 ServerTask, a task to handle HTTP requests.
 

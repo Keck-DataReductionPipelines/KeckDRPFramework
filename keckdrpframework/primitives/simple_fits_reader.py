@@ -38,7 +38,7 @@ class SimpleFitsReader(BasePrimitive):
         Returns HDUs or (later) data model
         """
         name = self.action.args.name
-        self.logger.info(f"Reading {name}")
+        self.logger.debug(f"Reading {name}")
         out_args = Arguments()
         out_args.name = name
         out_args.img = self.readData(name)

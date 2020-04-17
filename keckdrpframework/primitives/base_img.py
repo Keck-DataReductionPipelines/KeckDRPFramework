@@ -55,7 +55,7 @@ class BaseImg(BasePrimitive):
         hdr = hdus[0].header
         hdr["IMTYPE"] = new_imtype
         fname = self.context.config.temp_directory + "/" + new_name
-        self.logger.info(f"Saving {fname}")
+        self.logger.debug(f"Saving {fname}")
         pf.writeto(fname, img, hdr, overwrite=True)
 
     def _perform(self):
