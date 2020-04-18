@@ -234,7 +234,7 @@ class BasePipeline:
         """
         The no_event event.
         """
-        wait_time = min(30, max(5, self.context.config.no_event_wait_time))
+        wait_time = min(30, max(0, self.context.config.no_event_wait_time))
         self.logger.info(f"No event in queue, waiting {wait_time} s before continuing")
         time.sleep (wait_time)        
         return action.args
