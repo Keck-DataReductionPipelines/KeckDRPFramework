@@ -68,7 +68,7 @@ class BasePipeline:
         """
 
         def f(action, context, **kargs):
-            return Arguments(kargs=kargs, not_found=name)
+            return None
 
         self.logger.warn(f"Action not found {name}")
         return f
@@ -235,11 +235,11 @@ class BasePipeline:
         The no_event event.
         """
         wait_time = min(30, max(5, self.context.config.no_event_wait_time))
-        self.logger.info(f"No event in queue, waiting {wait_time} s before continuing")
-        time.sleep (wait_time)        
+        self.logger.debug(f"No event in queue, waiting {wait_time} s before continuing")
+        time.sleep(wait_time)
         return action.args
 
-    def _event_to_action(self, event, context):        
+    def _event_to_action(self, event, context):
         """
         Lookup function helper.
         Returns the event_info as (action, state, next_event)

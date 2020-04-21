@@ -22,7 +22,8 @@ class BaseImg(BasePrimitive):
 
     def __init__(self, action, context):
         """
-        Constructor
+        Constructor for BaseImg. 
+        Invokes the super class's initialization.
         """
         BasePrimitive.__init__(self, action, context)
 

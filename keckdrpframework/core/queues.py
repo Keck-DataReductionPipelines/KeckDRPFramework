@@ -38,6 +38,7 @@ import traceback
 from multiprocessing.managers import BaseManager
 from multiprocessing import Process
 
+
 class SimpleEventQueue:
     """
     This class represents the event queue in in both single process and multi-processing modes.
@@ -69,7 +70,13 @@ class SimpleEventQueue:
         self._in_progress[event.id] = event
         return event
 
-    def qsize(self):        
+    def head(self):
+        try:
+            return list(self.queue.queue)[0]
+        except:
+            return None
+
+    def qsize(self):
         return self.queue.qsize()
 
     def terminate(self):
@@ -83,25 +90,26 @@ class SimpleEventQueue:
         if ev is not None:
             del self._in_progress[event_id]
         return ev
-    
-    def re_append (self, event_id):
+
+    def re_append(self, event_id):
         """
         Re-appends event to the event_queue.
         """
-        ev = self.discard (event_id)
-        self.put (ev)
+        ev = self.discard(event_id)
+        self.put(ev)
 
     def get_pending(self):
         """
         Returns a copy of the queue's content
         """
-        return list (self.queue.queue)
+        return list(self.queue.queue)
 
-    def get_in_progress (self):
+    def get_in_progress(self):
         """
         Returns the in_progress dict
         """
         return self._in_progress
+
 
 class QueueServer(BaseManager):
     pass
@@ -135,24 +143,24 @@ def _queue_manager_target(hostname, portnr, auth_code, logger):
         server.serve_forever()
     except Exception as e:
         if logger is not None:
-            logger.error ("Exception in _queue_manager_target: {}".format(e))
+            logger.error("Exception in _queue_manager_target: {}".format(e))
 
     if logger is not None:
-        logger.info ("Queue manager process terminated")
+        logger.info("Queue manager process terminated")
 
 
 def start_queue_manager(hostname, portnr, auth_code, logger):
     """
     Starts the queue manager process.
-    """    
+    """
     p = Process(target=_queue_manager_target, args=(hostname, portnr, auth_code, logger))
     p.start()
-    for i in range (10):
+    for i in range(10):
         time.sleep(2)
-        if get_event_queue (hostname, portnr, auth_code) is not None:
+        if get_event_queue(hostname, portnr, auth_code) is not None:
             break
     else:
-        logger.debug (f"Queue ready {i}")
+        logger.debug(f"Queue ready {i}")
     return p
 
 

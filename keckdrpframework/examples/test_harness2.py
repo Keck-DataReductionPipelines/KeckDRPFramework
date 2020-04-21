@@ -18,12 +18,12 @@ import argparse
 import traceback
 
 
-from tools.toolHelper import import_module
-import_module ("keckdrpframework")
+from tools.interface import import_module
+
+import_module("keckdrpframework")
 
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.models.arguments import Arguments
-
 from keckdrpframework.examples.pipelines import fits2png_pipeline
 
 

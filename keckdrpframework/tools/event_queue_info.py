@@ -10,11 +10,13 @@ import sys
 import argparse
 import socket
 
-from toolHelper import import_module
-import_module ("keckdrpframework")
+from interface import import_module
+
+import_module("keckdrpframework")
 
 from keckdrpframework.core import queues
 from keckdrpframework.config.framework_config import ConfigClass
+
 
 def _parseArguments(in_args):
     description = "Get event queue info"
@@ -29,15 +31,15 @@ def _parseArguments(in_args):
     try:
         return parser.parse_args(in_args[1:])
     except:
-        #parser.print_help()
+        # parser.print_help()
         sys.exit(0)
 
 
 if __name__ == "__main__":
 
     args = _parseArguments(sys.argv)
-    cfg = ConfigClass(args.config_file)    
-    cfg.properties['want_multiprocessing'] = True
+    cfg = ConfigClass(args.config_file)
+    cfg.properties["want_multiprocessing"] = True
     hostname = cfg.queue_manager_hostname if args.hostname is None else args.hostname
     portnr = cfg.queue_manager_portnr if args.portnr is None else args.portnr
     auth_code = cfg.queue_manager_auth_code
@@ -52,12 +54,10 @@ if __name__ == "__main__":
         print("Event queue size =", queue.qsize())
         pending = queue.get_pending()
         for i, elem in enumerate(pending):
-            print (f"Event #{i}: {elem}")
+            print(f"Event #{i}: {elem}")
 
-        print ("In progress:")
+        print("In progress:")
         in_progress = queue.get_in_progress()
         for i, (id, evt) in enumerate(in_progress.items()):
-            print (f"Event #{i}: {evt.name}, {evt.args}")
-
-            
+            print(f"Event #{i}: {evt.name}, {evt.args}")
 

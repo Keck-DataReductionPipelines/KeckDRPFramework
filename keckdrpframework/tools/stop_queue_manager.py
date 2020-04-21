@@ -10,8 +10,9 @@ import sys
 import argparse
 import socket
 
-from toolHelper import import_module
-import_module ("keckdrpframework")
+from interface import import_module
+
+import_module("keckdrpframework")
 
 from keckdrpframework.core import queues
 from keckdrpframework.config.framework_config import ConfigClass
@@ -30,15 +31,15 @@ def _parseArguments(in_args):
     try:
         return parser.parse_args(in_args[1:])
     except:
-        #parser.print_help()
+        # parser.print_help()
         sys.exit(0)
 
 
 if __name__ == "__main__":
     args = _parseArguments(sys.argv)
     cfg = ConfigClass(args.config_file)
-    
-    cfg.properties['want_multiprocessing'] = True
+
+    cfg.properties["want_multiprocessing"] = True
     hostname = cfg.queue_manager_hostname if args.hostname is None else args.hostname
     portnr = cfg.queue_manager_portnr if args.portnr is None else args.portnr
     auth_code = cfg.queue_manager_auth_code
@@ -53,4 +54,3 @@ if __name__ == "__main__":
         except:
             pass
         print("Stop request sent.")
-

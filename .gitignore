@@ -6,4 +6,7 @@ version.py
 /.project
 /.pydevproject
 .idea
-keckdrpframework/unit_tests/source.me
+.gitignore
+.vscode
+source.me
+.gitignore

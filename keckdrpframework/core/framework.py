@@ -72,8 +72,8 @@ class Framework(object):
             self.config = configFile
 
         self.logger = getLogger(self.config.logger_config_file, name="DRPF")
-        self.logger.info ("")
-        self.logger.info ("Initialization Framework cwd={}".format(os.getcwd()))
+        self.logger.info("")
+        self.logger.info("Initialization Framework cwd={}".format(os.getcwd()))
 
         self.wait_for_event = False
         # The high priority event queue is local to the process
@@ -86,11 +86,9 @@ class Framework(object):
         # The done_queue
         self.done_queue = None
 
-        self.context = ProcessingContext(
-            self.event_queue, self.event_queue_hi, self.logger, self.config)
+        self.context = ProcessingContext(self.event_queue, self.event_queue_hi, self.logger, self.config)
 
-        pipeline = find_pipeline(
-            pipeline_name, self.config.pipeline_path, self.context, self.logger)
+        pipeline = find_pipeline(pipeline_name, self.config.pipeline_path, self.context, self.logger)
 
         if pipeline is None:
             raise Exception(f"Failed to initialize pipeline {pipeline_name}")
@@ -111,8 +109,7 @@ class Framework(object):
         portnr = cfg.queue_manager_portnr
         auth_code = cfg.queue_manager_auth_code
 
-        self.logger.debug(
-            f"Getting shared event queue from {hostname}:{portnr}")
+        self.logger.debug(f"Getting shared event queue from {hostname}:{portnr}")
         queue = queues.get_event_queue(hostname, portnr, auth_code)
         if queue is None:
             self.logger.debug("Starting Queue Manager")
@@ -158,8 +155,7 @@ class Framework(object):
                 ev = self.config.no_event_event
             if ev is None:
                 return None
-            ev.args = Arguments(
-                name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now()))
+            ev.args = Arguments(name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now()))
             return ev
 
     def _push_event(self, event_name, args):
@@ -210,8 +206,7 @@ class Framework(object):
                     self.logger.debug("Executing action " + action.name)
 
                 # Run action
-                action_output = pipeline.get_action(
-                    action_name)(action, context)
+                action_output = pipeline.get_action(action_name)(action, context)
                 action.output = action_output
                 if action_output is not None:
                     self.store_arguments = action_output
@@ -238,29 +233,35 @@ class Framework(object):
                 if self.config.pre_condition_failed_stop:
                     context.state = "stop"
         except:
-            self.logger.error(
-                "Exception while invoking {}. Execution stopped.".format(action_name))
+            self.logger.error("Exception while invoking {}".format(action_name))
             context.state = "stop"
             if self.config.print_trace:
                 traceback.print_exc()
-    
-    def _action_completed (self, successful, action):
+
+    def _action_completed(self, successful, action):
         event = action.event
         id = event.id
         try:
             argname = event.args.name
         except:
             argname = "Undef"
-        self.logger.info (f"Event completed: name {event.name}, action {action.name}, arg name {argname}, recurr {event._recurrent}")
-        try:                        
+        if successful:
+            self.logger.info(
+                f"Event completed: name {event.name}, action {action.name}, arg name {argname}, recurr {event._recurrent}"
+            )
+        else:
+            self.logger.info(
+                f"Event failed: name {event.name}, action {action.name}, arg name {argname}, recurr {event._recurrent}"
+            )
+        try:
             if self.event_queue.get_in_progress().get(id):
-                self.event_queue.discard (id)
+                self.event_queue.discard(id)
                 if event._recurrent:
                     self.append_event(event.name, event.args, event._recurrent)
             elif self.event_queue_hi.get_in_progress().get(id):
                 self.event_queue_hi.discard(id)
-        except Exception as e: 
-            self.logger.error (f"Exception occured while in _action_completed, {e}")
+        except Exception as e:
+            self.logger.error(f"Exception occured while in _action_completed, {e}")
 
     def main_loop(self):
         """
@@ -269,7 +270,8 @@ class Framework(object):
         This method can be called directly to run in the main thread.
         To run in a thread, use start_action_loop(). 
         """
-        success = False        
+        success = False
+        self.keep_going = True
         while self.keep_going:
             try:
                 action = ""
@@ -279,37 +281,36 @@ class Framework(object):
                     self.logger.debug("No new events - do nothing")
 
                     if self.event_queue.qsize() == 0 and self.event_queue_hi.qsize() == 0:
-                        self.logger.debug(
-                            f"No pending events or actions, terminating")
+                        self.logger.debug(f"No pending events or actions, terminating")
                         self.keep_going = False
                         if self.queue_manager is not None:
                             try:
                                 self.event_queue.terminate()
                             except:
-                                pass                   
+                                pass
                     continue
 
                 action = self.event_to_action(event, self.context)
                 self.execute(action, self.context)
-                success = True
+                success = action.output is not None
+                self.context.state = self.on_state(self.context.state)
                 if self.context.state == "stop":
                     break
             except BrokenPipeError as bpe:
-                self.logger.error(
-                    f"Failed to get retrieve events. Queue may be closed.")
+                self.logger.error(f"Failed to get retrieve events. Queue may be closed.")
                 break
             except Exception as e:
-                self.logger.error(
-                    f"Exception while processing action {action}, {e}")
+                self.logger.error(f"Exception while processing action {action}, {e}")
                 if self.config.print_trace:
                     traceback.print_exc()
-            self._action_completed (success, action)
-            
+
+            self._action_completed(success, action)
+
         self.keep_going = False
         self.logger.info("Exiting main loop")
 
-    def _main_loop_helper (self):
-        self.main_loop ()
+    def _main_loop_helper(self):
+        self.main_loop()
         self.on_exit(0)
 
     def start_action_loop(self):
@@ -372,8 +373,7 @@ class Framework(object):
         ds = self.context.data_set
         if ds is None:
             # Data_set will scan and import the content of the directory
-            ds = DataSet(path, self.logger, self.config,
-                         self.context.event_queue)
+            ds = DataSet(path, self.logger, self.config, self.context.event_queue)
 
         if files is not None:
             for f in files:
@@ -403,8 +403,22 @@ class Framework(object):
                 self.logger.info("Framework main loop started")
                 self.wait_for_ever()
 
-    def on_exit (self, status=0):
+    def on_exit(self, status=0):
+        """
+        Hook fo exit
+        Subclasses can override to continue in the main_loop or call exit(status)
+        """
         os._exit(status)
+
+    def on_state(self, state):
+        """
+        Hook to change context state.
+        Default is to ignore state = 'stop'.
+        To terminate, override this method to return 'stop'.
+        """
+        if state == "stop":
+            state = "ready"
+        return state
 
 
 def find_pipeline(pipeline_name, pipeline_path, context, logger):
@@ -431,14 +445,12 @@ def find_pipeline(pipeline_name, pipeline_path, context, logger):
             return pipeline_name(context)
         elif isinstance(pipeline_name, type(sys)):  # is a module, ie. a.a_b_c
             last_name = pipeline_name.__name__.split(".")[-1]
-            klass = getattr(pipeline_name, to_camel_case(
-                last_name))  # try a.a_b_c.ABC
+            klass = getattr(pipeline_name, to_camel_case(last_name))  # try a.a_b_c.ABC
             if klass is not None:
                 return klass(context)
         elif isinstance(pipeline_name, object):  # object, already an instance of a class
             return pipeline_name
-        logger.error(
-            f"{pipeline_name} must be a module, a class, an object or a string")
+        logger.error(f"{pipeline_name} must be a module, a class, an object or a string")
         return None
 
     #
@@ -457,7 +469,7 @@ def find_pipeline(pipeline_name, pipeline_path, context, logger):
             klass = getattr(module, to_camel_case(last_name))
             if klass is not None:
                 return klass(context)
-    except Exception as me:        
+    except Exception as me:
         logger.debug(f"Failed loading as string {pipeline_name}")
         logger.debug(f"Trying {pipeline_path} next")
 

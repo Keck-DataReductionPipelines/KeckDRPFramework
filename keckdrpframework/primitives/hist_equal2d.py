@@ -1,6 +1,8 @@
 """
-Created on Jul 9, 2019
+Example of a primitive, a subclass of BasePrimitive.
 
+This class applies the histogram equalization to an image.
+Created on Jul 9, 2019
         
 @author: skwok
 """

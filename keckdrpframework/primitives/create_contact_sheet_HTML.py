@@ -1,4 +1,6 @@
 """
+Example create a contact sheet.
+
 Created on Jul 12, 2019
                 
 @author: skwok
@@ -14,10 +16,13 @@ class CreateContactSheetHTML(BasePrimitive):
     """
     Given a list of png files in a directory, creates a HTML file in the same directory
     containing the png files for easy viewing.
-    
-    Arguments: 
-    dir_name: output directory
-    out_name: output file name
+
+    Arguments:
+
+    dir_name: name of the directory containing the images
+    pattern: pattern to select input files, ie. "*.png"
+    out_name: output file name, ie. some_name.html
+
     """
 
     def __init__(self, action, context):
@@ -40,6 +45,12 @@ class CreateContactSheetHTML(BasePrimitive):
 
     def _perform(self):
         """
+        Arguments:
+
+        dir_name: name of the directory containing the images
+        pattern: pattern to select input files, ie. "*.png"
+        out_name: output file name, ie. some_name.html
+
         """
         args = self.action.args
         dir_name = args.dir_name

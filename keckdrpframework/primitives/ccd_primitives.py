@@ -1,11 +1,17 @@
 """
+Examples of subclasses of BaseImg and BasePrimitive.
+
+A primitive can be:
+  - a subclass of BasePrimitive or its subclasses
+  - a function (action, context)
+
 Created on Jul 31, 2019
                 
 @author: skwok
 """
 
 from keckdrpframework.primitives.base_primitive import BasePrimitive
-from keckdrpframework.primitives.base_img import Base_img
+from keckdrpframework.primitives.base_img import BaseImg
 from keckdrpframework.models.arguments import Arguments
 
 from keckdrpframework.primitives.hist_equal2d import HistEequal2d
@@ -14,9 +20,9 @@ from keckdrpframework.primitives.save_png import SavePpng
 from keckdrpframework.primitives.noise_removal import NoiseRemoval
 
 
-class BaseCcdPrimitive(Base_img):
+class BaseCcdPrimitive(BaseImg):
     def __init__(self, action, context):
-        Base_img.__init__(self, action, context)
+        BaseImg.__init__(self, action, context)
 
     def _pre_condition(self):
         """
@@ -55,14 +61,14 @@ class BaseCcdPrimitive(Base_img):
         return Arguments(name=args.new_file_name)
 
 
-class ProcessBias(base_ccd_primitive):
+class ProcessBias(BaseCcdPrimitive):
     """
     Example using subclassing, where parameters are in action.args
     Builds a master bias frame and saves it to temp/stacked.fits with IMTYPE = "MASTER_BIAS"
     """
 
     def __init__(self, action, context):
-        base_ccd_primitive.__init__(self, action, context)
+        BaseCcdPrimitive.__init__(self, action, context)
 
 
 class ProcessObject(BasePrimitive):
@@ -80,6 +86,9 @@ class ProcessObject(BasePrimitive):
 
 
 def process_flat(action, context):
+    """
+    Example of a function as primitive
+    """
     args = simple_fits_reader(action, context)()
     img = args.hdus[0].data
     name = args.name
