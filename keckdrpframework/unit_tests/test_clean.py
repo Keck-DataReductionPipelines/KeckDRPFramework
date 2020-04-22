@@ -14,13 +14,13 @@ def test_clean_up():
         for f in flist:
             os.unlink(f)
 
-    if os.path.exists("output"):        
+    if os.path.exists("output"):
         remove(glob.glob("output/*.jpg"))
         os.rmdir("output")
 
-    if os.path.exists ("__pycache__"):
+    if os.path.exists("__pycache__"):
         remove(glob.glob("__pycache__/*.pyc"))
-        os.rmdir ("__pycache__")
-        
+        os.rmdir("__pycache__")
+
     if os.path.exists("DRPF.log"):
-        os.unlink ("DRPF.log")
+        os.unlink("DRPF.log")

@@ -58,7 +58,7 @@ class BasePrimitive:
             if self._post_condition():
                 return self.output
         return None
-        
+
     def __call__(self):
         """
         Makes objects of this calls callable.

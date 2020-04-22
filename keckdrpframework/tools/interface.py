@@ -28,7 +28,7 @@ from keckdrpframework.core import queues
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.models.processing_context import ProcessingContext
-from keckdrpframework.utils.drpf_logger import DRPFLogger
+from keckdrpframework.utils.drpf_logger import DRPFLogger, getLogger
 
 
 class FrameworkInterface:
@@ -49,7 +49,42 @@ class FrameworkInterface:
             self.queue = queues.get_event_queue(hostname, portnr, auth_code)
         return self.queue is not None
 
+    def start_event_queue(self):
+        """
+        Starts a queue manager, if queue is None.
+        Returns the queue.
+        """
+        q_ok = self._get_queue()
+        if not q_ok:
+            cfg = self.config
+            hostname = cfg.queue_manager_hostname
+            portnr = cfg.queue_manager_portnr
+            auth_code = cfg.queue_manager_auth_code
+            queues.start_queue_manager(hostname, portnr, auth_code, logger=None)
+            return self._get_queue()
+        return q_ok
+
+    def stop_event_queue(self):
+        """
+        Tells the queue manager process to terminate.
+        Returns True if successful.
+        """
+        if self.queue is None:
+            return
+        try:
+            self.queue.terminate()
+        except:
+            # Once the quueue manager terminates, there will be an exception.
+            # Just ignore it.
+            pass
+        self.queue = None
+        return
+
     def next_event(self):
+        """
+        Gets the head of the event queue.
+        Returns an event or None
+        """
         if self._get_queue():
             try:
                 return self.queue.head()
@@ -58,22 +93,40 @@ class FrameworkInterface:
         return None
 
     def pending_events(self):
+        """
+        Returns a copy of the event queue, an empty tuple or None.
+        """
         if self._get_queue():
             try:
-                return self.queue.get_pending()
-            except:
+                res = self.queue.get_pending()
+                if res is None:
+                    return tuple()
+                else:
+                    return res
+            except Exception as e:
+                print("pending", e)
                 self.queue = None
         return None
 
     def in_progress_events(self):
+        """
+        Returns the in_progress dict, an empty dict or None
+        """
         if self._get_queue():
             try:
-                return self.queue.get_in_progress()
+                res = self.queue.get_in_progress()
+                if res is None:
+                    return dict()
+                else:
+                    return res
             except:
                 self.queue = None
         return None
 
     def add_event(self, event):
+        """
+        Addes new event to the queue
+        """
         if self._get_queue():
             try:
                 return self.queue.put(event)
