@@ -5,7 +5,7 @@ Created on Jul 8, 2019
 """
 
 
-class Action():
+class Action:
     """
     Action, represents action to pass to a primitive.
     Action Constructor:

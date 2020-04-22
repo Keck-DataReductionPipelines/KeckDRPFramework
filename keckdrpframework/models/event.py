@@ -13,6 +13,7 @@ class Event(object):
     The event object.
     Contains an index to keep them sorted.
     """
+
     counter = 0
 
     def __init__(self, name, args, recurrent=False):

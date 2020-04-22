@@ -71,6 +71,9 @@ class SimpleEventQueue:
         return event
 
     def head(self):
+        """
+        Returns the head of the queue.
+        """
         try:
             return list(self.queue.queue)[0]
         except:

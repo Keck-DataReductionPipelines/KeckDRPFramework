@@ -60,4 +60,3 @@ if __name__ == "__main__":
         in_progress = queue.get_in_progress()
         for i, (id, evt) in enumerate(in_progress.items()):
             print(f"Event #{i}: {evt.name}, {evt.args}")
-

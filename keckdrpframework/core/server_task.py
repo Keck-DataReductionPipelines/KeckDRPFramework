@@ -83,8 +83,7 @@ class DRPFServerHandler(EasyHTTPHandler):
     def add_create_contact_sheet_event(self, req, qstr):
         self._getParameters(qstr)
         out_dir = self.DRPFramework.config.output_directory
-        args = Arguments(dir_name=out_dir, pattern="*.png",
-                         out_name="contact_sheet.html", cnt=-1)
+        args = Arguments(dir_name=out_dir, pattern="*.png", out_name="contact_sheet.html", cnt=-1)
         self.DRPFramework.append_event("contact_sheet", args)
         return json.dumps("OK"), self.jsonText
 
@@ -143,8 +142,7 @@ def start_http_server(fw, config, logger):
     httpd = EasyHTTPServerThreaded(("", port), DRPF_server_handler)
     hostname = socket.gethostname()
     hostname = "127.0.0.1"
-    logger.info("HTTPD started %s %d" %
-                (socket.gethostbyaddr(socket.gethostbyname(hostname)), port))
+    logger.info("HTTPD started %s %d" % (socket.gethostbyaddr(socket.gethostbyname(hostname)), port))
     logger.info("DocRoot is " + DRPF_server_handler.DocRoot)
 
     try:
