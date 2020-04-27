@@ -88,8 +88,6 @@ class Framework(object):
 
         self.context = ProcessingContext(self.event_queue, self.event_queue_hi, self.logger, self.config)
 
-        self.context = ProcessingContext(self.event_queue, self.event_queue_hi, self.logger, self.config)
-
         pipeline = find_pipeline(pipeline_name, self.config.pipeline_path, self.context, self.logger)
 
         if pipeline is None:
