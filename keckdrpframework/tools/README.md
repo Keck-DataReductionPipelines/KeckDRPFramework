@@ -18,3 +18,10 @@ This program simply returns the number of entries in the event queue, which is a
 Addes a new event to the queue. The arguments are event name and event argument.
 For example, the event name could be "new_file" and the event argument could be the name of the new file.
 
+# Jupyter notebooks examples
+
+There are two Jupyter notebooks: DRPF-remote-interface.ipynb and Reduce_data.ipynb.
+
+DRPF-remote-interface shows how to communicate with the queue manager.
+
+Reduce_data shows how to run a pipeline in a notebook.
