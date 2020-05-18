@@ -155,9 +155,7 @@ class Framework(object):
                 ev = self.config.no_event_event
             if ev is None:
                 return None
-
             ev.args = Arguments(name=ev.name, time=datetime.datetime.ctime(datetime.datetime.now()))
-
             return ev
 
     def _push_event(self, event_name, args):
@@ -212,13 +210,14 @@ class Framework(object):
                 action.output = action_output
                 if action_output is not None:
                     self.store_arguments = action_output
+                else:
+                    self.store_arguments = action.args
 
                 # Post condition
                 if pipeline.get_post_action(action_name)(action, context):
                     if not action.new_event is None:
                         # Post new event
-
-                        new_args = Arguments() if action_output is None else action_output
+                        new_args = self.store_arguments if action_output is None else action_output
                         self._push_event(action.new_event, new_args)
 
                     if not action.next_state is None:
@@ -235,6 +234,8 @@ class Framework(object):
                 # Failed pre-condition
                 if self.config.pre_condition_failed_stop:
                     context.state = "stop"
+                else:
+                    self.store_arguments = action.args
         except:
             self.logger.error("Exception while invoking {}".format(action_name))
             context.state = "stop"
@@ -299,11 +300,9 @@ class Framework(object):
                 self.context.state = self.on_state(self.context.state)
                 if self.context.state == "stop":
                     break
-
             except BrokenPipeError as bpe:
                 self.logger.error(f"Failed to get retrieve events. Queue may be closed.")
                 break
-
             except Exception as e:
                 self.logger.error(f"Exception while processing action {action}, {e}")
                 if self.config.print_trace:
@@ -383,6 +382,10 @@ class Framework(object):
         if files is not None:
             for f in files:
                 ds.append_item(f)
+
+        # for ditem in ds.data_table.index:
+        #    self.logger.info("File ingestion: pushing next file event to the queue")
+        #    self.event_queue.put(Event("next_file", Arguments(name=ditem)))
 
         self.context.data_set = ds
         if monitor:
