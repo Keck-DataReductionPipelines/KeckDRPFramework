@@ -115,6 +115,21 @@ def test_context_new(init_context):
     assert pc is not None, "No context created"
 
 
+def test_append_new_event(init_context):
+    """
+    Append new event 
+    """
+    pc = init_context
+    pc.append_new_event("test", Arguments("test", a=1))
+    pc.append_new_event("test1", Arguments("test1", a=2))
+    pc.append_new_event("test2", Arguments("test2", a=3))
+
+    e1 = pc.event_queue.get()
+    e2 = pc.event_queue.get()
+    e3 = pc.event_queue.get()
+    assert e1.args.a == 1 and e2.args.a == 2 and e3.args.a == 3, "Unexpected event arguments"
+
+
 #
 # DataSet tests
 #
