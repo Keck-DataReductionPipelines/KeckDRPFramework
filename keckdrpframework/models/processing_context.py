@@ -33,3 +33,9 @@ class ProcessingContext:
         The new event is not recurrent.
         """
         self.event_queue_hi.put(Event(event_name, args, recurrent=False))
+
+    def append_new_event(self, event_name, args, recurrent=False):
+        """
+        Appends a new event to the low priority event queue
+        """
+        self.event_queue.put(Event(event_name, args, recurrent=recurrent))
