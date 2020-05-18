@@ -210,12 +210,14 @@ class Framework(object):
                 action.output = action_output
                 if action_output is not None:
                     self.store_arguments = action_output
+                else:
+                    self.store_arguments = action.args
 
                 # Post condition
                 if pipeline.get_post_action(action_name)(action, context):
                     if not action.new_event is None:
                         # Post new event
-                        new_args = Arguments() if action_output is None else action_output
+                        new_args = self.store_arguments if action_output is None else action_output
                         self._push_event(action.new_event, new_args)
 
                     if not action.next_state is None:
@@ -232,6 +234,8 @@ class Framework(object):
                 # Failed pre-condition
                 if self.config.pre_condition_failed_stop:
                     context.state = "stop"
+                else:
+                    self.store_arguments = action.args
         except:
             self.logger.error("Exception while invoking {}".format(action_name))
             context.state = "stop"
