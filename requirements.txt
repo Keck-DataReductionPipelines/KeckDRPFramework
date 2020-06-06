@@ -1,2 +1,6 @@
 sphinx
 gitpython
+pytest
+tools
+matplotlib
+pandas
