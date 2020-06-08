@@ -22,14 +22,17 @@ conf.read(['setup.cfg'])
 
 # MODIFY THE NAME OF THE PACKAGE to be the one chosen
 NAME = 'template'
-VERSION = '0.11.1dev'
+VERSION = '0.0'
 RELEASE = 'dev' not in VERSION
 
-scripts = [fname for fname in glob.glob(os.path.join('scripts', '*'))
-           if os.path.basename(fname) != 'README.rst']
+scripts = []
 
-# Define entry points for command-line scripts
-entry_points = {'console_scripts': []}
+entry_points = {
+    'console_scripts': [
+        "template_script = pipeline_template.scripts.template_script:main"
+    ]
+}
+
 
 # modify the list of packages, to make sure that your package is defined correctly
 setup(name=NAME,
