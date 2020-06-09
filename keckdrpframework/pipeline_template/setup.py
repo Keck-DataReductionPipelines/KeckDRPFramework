@@ -21,7 +21,7 @@ conf.read(['setup.cfg'])
 
 
 # MODIFY THE NAME OF THE PACKAGE to be the one chosen
-NAME = 'template'
+NAME = 'my_pipeline'
 VERSION = '0.0'
 RELEASE = 'dev' not in VERSION
 
@@ -29,7 +29,7 @@ scripts = []
 
 entry_points = {
     'console_scripts': [
-        "template_script = pipeline_template.scripts.template_script:main"
+        "template_script = my_pipeline.scripts.template_script:main"
     ]
 }
 
