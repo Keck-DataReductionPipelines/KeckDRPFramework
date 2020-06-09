@@ -51,15 +51,20 @@ def main():
     pkg = 'template'
 
     # load the framework config file from the config directory of this package
+    # this part uses the pkg_resources package to find the full path location
+    # of framework.cfg
     framework_config_file = "configs/framework.cfg"
     framework_config_fullpath = pkg_resources.resource_filename(pkg, framework_config_file)
 
     # load the logger config file from the config directory of this package
+    # this part uses the pkg_resources package to find the full path location
+    # of logger.cfg
     framework_logcfg_file = 'configs/logger.cfg'
     framework_logcfg_fullpath = pkg_resources.resource_filename(pkg, framework_logcfg_file)
 
-    # add PIPELINE specific config files # make changes here to allow this file
-    # to be loaded from the command line
+    # add PIPELINE specific config files
+    # this part uses the pkg_resource package to find the full path location
+    # of template.cfg or uses the one defines in the command line with the option -c
     if args.config_file is None:
         pipeline_config_file = 'configs/template.cfg'
         pipeline_config_fullpath = pkg_resources.resource_filename(pkg, pipeline_config_file)
@@ -68,6 +73,7 @@ def main():
         pipeline_config = ConfigClass(args.pipeline_config_file, default_section='TEMPLATE')
 
     # END HANDLING OF CONFIGURATION FILES ##########
+
     try:
         framework = Framework(TemplatePipeline, framework_config_fullpath)
         logging.config.fileConfig(framework_logcfg_fullpath)
@@ -77,6 +83,9 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
+    # this part defines a specific logger for the pipeline, so that
+    # we can separate the output of the pipeline
+    # from the output of the framework
     framework.context.pipeline_logger = getLogger(framework_logcfg_fullpath, name="TEMPLATE")
     framework.logger = getLogger(framework_logcfg_fullpath, name="DRPF")
 
@@ -88,7 +97,7 @@ def main():
         framework.logger.info("Starting queue manager only, no processing")
         framework.start_queue_manager()
 
-    # single frame processing
+    # frames processing
     elif args.frames:
         for frame in args.frames:
             # ingesting and triggering the default ingestion event specified in the configuration file
