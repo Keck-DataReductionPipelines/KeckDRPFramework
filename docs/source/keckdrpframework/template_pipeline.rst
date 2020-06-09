@@ -12,57 +12,43 @@ Start by making a copy of the directory with all the included subdirectories
 
   >>> mkdir MyPipeline
   >>> cd MyPipeline
-  >>> cp -r <KeckDRPFramework_LOCATION>/keckdrpframework/pipeline_template/. .
+  >>> cp -r <KeckDRPFramework_LOCATION>/pipeline_template/. .
 
 Setup.py
 ^^^^^^^^
 You can now start editing the files in the new pipeline, starting with ``setup.py``. In this file,
 it is important to edit the NAME, the description and the licence. Note that this file assumes that
 any command line interface script will live in the ``scripts`` directory. Note also that the package name
-is currently set to ``my_pipeline``. In the next step, we will rename this directory to be the actual
+is currently set to ``template``. In the next step, we will rename this directory to be the actual
 package name of your pipeline, so you need to change this variable accordingly.
 
-Eventually, your ``setup.py`` file should contain:
-.. code-block:: python
+The name of your pipeline should be set correctly in the ``NAME`` variable and in the ``packages`` variable of the
+``setup`` dictionary.
 
-  NAME = 'MyDRP'
-
-And the setup dictionary should contain:
-.. code-block:: python
-
-   packages=['MyDRP',],
-
-Create the main pipeline
+The main pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-As a first step, rename the directory ``my_pipeline`` to be the name of the pipeline that you are creating
+Defining a pipeline is essentially the same as defining the entries of the ``event_table``.
+A complete description of the event table is provided in :ref:`events_actions`.
 
-.. code-block:: python
-
-  >>> mv my_pipeline MyDRP
-
-In the subdirectory ``pipelines``, rename the ``template_pipeline.py``
-
-.. code-block:: python
-
-  >>> cd MyDRP/pipelines
-  >>> mv template_pipeline.py MyDRP.py
-
-You can now edit the ``MyDRP.py`` file by completing the entries in the ``event_table``. A complete description of the
-event table is provided in :ref:`events_actions`. The ``import`` section of this file is made of two
-parts: first we import the necessary framework modules such as:
+The ``import`` section of this file is made of two parts: first we import the necessary framework modules such as:
 
 .. code-block:: python
 
   from keckdrpframework.pipelines.base_pipeline import BasePipeline
+  from keckdrpframework.models.processing_context import ProcessingContext
+  from keckdrpframework.primitives.simple_fits_reader import SimpleFitsReader
 
-Then we import all the primitives that are defined in the ``primitives`` directory, and that will
-ultimately provide the actual processing. Using the primitive that we will define later, your import
-should look like this:
+The ``SimpleFitsReader`` import is not necessary but it is a good starting point to import FITS files.
+
+The next step is to import primitives that are defined in the ``primitives`` directory. As explained in the :ref:`primitives`
+section, if the name of the file containing a primitive corresponds to the name of the class that defines the
+primitive, there is no need to import it (see the example call to ``template2`` in the event table). If this is not the case,
+then the primitive must be imported explicitely (see the example call to ``templace`` in the event table).
 
 .. code-block:: python
 
-  from ..primitives.mydrp_primitive import *
+  from template.primitives.Template import MyTemplate
 
 In the simple case in which a single primitive is invoked, a single entry in the event table is all that is needed.
 Remember that the format for the event table is:
@@ -79,118 +65,143 @@ Which can be simplified to:
 
 if no state update is required and we don't need to trigger another event after the first.
 
-Again, using the primitive that we will define later, your event table will look like this:
+The template pipeline contains 4 events, which have been chosen to illustrate 4 possible cases of the use of
+primitives.
 
-.. code-block:: python
+* the ``next_file`` event calls the primitive ``SimpleFitsReader`` which is a standard primitive provided by the
+  framework and imported explicitly.
 
-  event_table: {
-     "mydrp_event": ("DrpPrimitive", None, None)
-     }
+* the ``template`` event calls the primitive ``MyTemplate`` which is defined in a file called ``Template.py``, and
+ imported explicitly. This primitive belongs to this specific pipeline, not to the framework.
 
-The final step is to change the name of the main class, from ``template_pipeline`` to ``MyDRP``:
+* the ``template2`` event calls the primitive ``Template2`` which is defined in a file called ``Template2.py``. Because
+  the name of the class and the name of file are the same, there is no need to explicitly import the module: the
+  framework will autodiscover it and import it.
 
-.. code-block:: python
+* the ``template_action`` event calls the primitive ``template_action``, which is just a function defined
+  in this same pipeline file. This is how we define simple, standard events that don't need their own file or module.
 
-  class MyDRP (BasePipeline):
+Note that this is a true pipeline, in the sense that each event automatically trigger another one: this is achieved
+by declaring the next event (3rd element of the tuple) to be the next event in the pipeline: ``next_file`` calls
+``template``, which in turns calls ``template2``, which calls ``template_action``.
+This is not necessary: this way of building a pipeline simulates the concept of a recipe.  It is entirely possible to
+define a set of independent, disconnected events.
 
-
-Connecting the event to the code
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Let's now turn to the primitives directory, and start by renaming the ``template_primitive.py`` file
-to a suitable name
-
-.. code-block:: python
-
-  >>> mv template_primitive.py mydrp_primitive.py
-
-We can now edit the file to change the name of the primitive that is defined in the file. Change the name
-``Template`` to the primitive_name that you have used in your event table.
-
-.. code-block:: python
-
- class DrpPrimitive(BasePrimitive):
-    def __init__(self, action, context)
-        """
-        Constructor
-        """
-        BasePrimitive.__init__(self, action, context)
-
-
-    def _perform (self):
-        """
-        Returns an Argument() with the parameters that depends on this operation.
-        """
-        print("Processing: %s" % self.action.args.name)
-        #raise Exception ("Not yet implemented")
-
-Note that we have replaced the "not yet implemented" code with a very simple operation, such as
-printing the name of the file being processed. This is just to have code that can run without
-generating an exception.
-
-See the :ref:`primitives` documentation for a complete description of the primitives.
 
 Creating the startup script
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The final step to run the pipeline is to trigger the new event and apply it to a file, such as FITS file.
+The final step to run the pipeline is to trigger eventd and apply it to a file, such as FITS file.
 There are many ways of doing this (see :ref:`_startup_script`).
 
-The easiest approach is to use the "single file" method, where the use specifies the ``-frames`` argument.
+Let's analyze the content of the startup script provided as an example.
 
-In the script, make sure that the event that is generates is not ``next_file`` but ``mydrp_event``, which
-is the event that you specified in the ``event_table``.
-
-In practice, the specific section of the startup script would say:
+We start by importing the newly created pipeline:
 
 .. code-block:: python
 
-  # single frame processing
-    elif args.frames:
+   from  template.pipelines.template_pipeline import TemplatePipeline
+
+We then define a set of command line arguments in a function that is passed to the argument parser.
+
+.. code-block:: python
+
+  def _parseArguments(in_args):
+    description = "Template pipeline CLI"
+
+    # this is a simple case where we provide a frame and a configuration file
+    parser = argparse.ArgumentParser(prog=f"{in_args[0]}", description=description)
+    parser.add_argument('-c', dest="config_file", type=str, help="Configuration file")
+    parser.add_argument('-frames', nargs='*', type=str, help='input image file (full path, list ok)', default=None)
+
+    # in this case, we are loading an entire directory, and ingesting all the files in that directory
+    parser.add_argument('-infiles', dest="infiles", help="Input files", nargs="*")
+    parser.add_argument('-d', '--directory', dest="dirname", type=str, help="Input directory", nargs='?', default=None)
+    # after ingesting the files, do we want to continue monitoring the directory?
+    parser.add_argument('-m', '--monitor', dest="monitor", action='store_true', default=False)
+
+    # special arguments, ignore
+    parser.add_argument("-i", "--ingest_data_only", dest="ingest_data_only", action="store_true",
+                        help="Ingest data and terminate")
+    parser.add_argument("-w", "--wait_for_event", dest="wait_for_event", action="store_true", help="Wait for events")
+    parser.add_argument("-W", "--continue", dest="continuous", action="store_true",
+                        help="Continue processing, wait for ever")
+    parser.add_argument("-s", "--start_queue_manager_only", dest="queue_manager_only", action="store_true",
+                        help="Starts queue manager only, no processing",
+    )
+
+    args = parser.parse_args(in_args[1:])
+    return args
+
+The next step is to define a ``main()`` function, which will parse the arguments and start the processing.
+
+The template contains a number of useful comments that should guide the user throughout the process
+of setting up the specific pipeline.
+
+A concept that deserve some explanation is the triggering of the first event.
+
+The framework configuration file ``framework.cfg`` contains the definition of the default event that is
+triggered when a file is ingested, specified as:
+
+.. code-block:: python
+
+    #
+    # Default event to trigger on new files
+    #
+    default_ingestion_event = "next_file"
+
+This means that if we don't make any other choice, and we call the method ``framework.ingest_data`` on the list of
+frames, the framework will automatically trigger the ``next_file`` event on each file specified on the command
+line or in a specified directory. Because we have this event in our ``event_table``, this will work perfectly, and
+the rest of the events will be triggered in sequence as specified in the ``event_table``.
+
+Sometimes, it is desirable to trigger a different event. For example, we can specify a different type of ``next_file``
+which only parses the header but does not trigger any processing.
+To do so, we would first change the ``event_table`` to start with:
+
+.. code-block:: python
+
+    event_table = {
+
+        # this is a standard primitive defined in the framework
+        "next_file": ("SimpleFitsReader", "file_ready", None),
+
+We would then manually add the desired event to the queue, as part of the ``template_script.py``, immediately
+after the ingestion:
+
+.. code-block:: python
+
+       elif args.frames:
         for frame in args.frames:
+            # ingesting and triggering the default ingestion event specified in the configuration file
+            framework.ingest_data(None, args.frames, False)
+            # manually triggering an event upon ingestion, if desired.
             arguments = Arguments(name=frame)
-            framework.append_event('mydrp_event', arguments)
+            framework.append_event('template', arguments)
 
-Other changes that are needed to this files are:
- - add the import for the pipeline at the beginning
- - pass the imported pipeline as an argument to the framework initialization code
+In this case, for each file we automatically trigger ``next_file``, which returns the control to the framework
+without triggering anything else. After that, we define a new argument based on the name of the file,
+and we manually add the ``template`` event to the queue.
+The result is exactly the same as before, but we have much more control on what happens.
 
-.. code-block:: python
+If instead of providing a list of files we want to process an entire directory, we can use the ``-d`` option
+paired with the ``-i`` option, to specify the directory and the file pattern to use.
+If we want to continue monitoring the directory for new files, we can use the ``-m -W`` combination.
 
-  from MyDRP.pipelines.MyDRP import MyDRP
+Installation and examples
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: python
+To install the pipeline, use:
 
-    try:
-        framework = Framework(MyDRP, config)
-    except Exception as e:
-        print("Failed to initialize framework, exiting ...", e)
+.. code-block:: shell
 
-We are now ready to install the pipeline and run it (we will use an example file called myfitsfile.fits)
+   python setup.py develop (or install)
 
-.. code-block:: python
+A few example of using the template pipeline on a set of test data is provided here:
 
-  >>> python setup.py develop
-  >>> template_script -frames=myfitsfile.fits -c config.cfg
+.. code-block:: shell
 
-Here we are assuming that the configuration parameters in config.cfg are correct. A discussion of the
-configuration parameters can be found in TBD.
+    > template_script -f <KeckDRPFramework_LOCATION>/keckdrpframework/unit_tests/test_files/*.fits
 
-If everything worked correctly, the script will assign the file to an argument and pass the argument
-to the ``mydrp_event``, which is associated to the ``DrpPrimitive`` code. The code in that primitive
-will inherit the argument, accessed via ``self.action.args`` and will execute the ``_perform`` method
-of the class.
-
-The result of the run should look like this:
-
-.. code-block:: python
-
-    2019-12-17 10:20:49:DRPF:INFO: Framework initialized
-    2019-12-17 10:20:49:DRPF:INFO: Event to action ('DrpPrimitive', None, None)
-    2019-12-17 10:20:49:DRPF:INFO: Framework main loop started
-    2019-12-17 10:20:49:DRPF:INFO: Executing action DrpPrimitive
-    Processing: myfitsfile.fits
-    2019-12-17 10:20:49:DRPF:INFO: Action DrpPrimitive done
-    2019-12-17 10:20:50:DRPF:INFO: No new events - do nothing
-    2019-12-17 10:20:50:DRPF:INFO: No pending events or actions, terminating
+    > template_script -d <KeckDRPFramework_LOCATION>/keckdrpframework/unit_tests/test_files -i *.fits -m -W
 
