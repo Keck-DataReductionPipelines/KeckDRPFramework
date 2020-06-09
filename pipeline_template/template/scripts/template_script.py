@@ -12,7 +12,7 @@ import logging.config
 
 # the preferred way to import the pipeline is a direct import
 
-from my_pipeline.pipelines.template_pipeline import TemplatePipeline
+from template.pipelines.template_pipeline import TemplatePipeline
 
 
 def _parseArguments(in_args):
@@ -35,12 +35,8 @@ def _parseArguments(in_args):
     parser.add_argument("-w", "--wait_for_event", dest="wait_for_event", action="store_true", help="Wait for events")
     parser.add_argument("-W", "--continue", dest="continuous", action="store_true",
                         help="Continue processing, wait for ever")
-    parser.add_argument(
-        "-s",
-        "--start_queue_manager_only",
-        dest="queue_manager_only",
-        action="store_true",
-        help="Starts queue manager only, no processing",
+    parser.add_argument("-s", "--start_queue_manager_only", dest="queue_manager_only", action="store_true",
+                        help="Starts queue manager only, no processing",
     )
 
     args = parser.parse_args(in_args[1:])
@@ -52,7 +48,7 @@ def main():
     args = _parseArguments(sys.argv)
 
     # START HANDLING OF CONFIGURATION FILES ##########
-    pkg = 'my_pipeline'
+    pkg = 'template'
 
     # load the framework config file from the config directory of this package
     framework_config_file = "configs/framework.cfg"
@@ -65,7 +61,7 @@ def main():
     # add PIPELINE specific config files # make changes here to allow this file
     # to be loaded from the command line
     if args.config_file is None:
-        pipeline_config_file = 'configs/template_pipeline.cfg'
+        pipeline_config_file = 'configs/template.cfg'
         pipeline_config_fullpath = pkg_resources.resource_filename(pkg, pipeline_config_file)
         pipeline_config = ConfigClass(pipeline_config_fullpath, default_section='TEMPLATE')
     else:
@@ -81,10 +77,8 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    framework.context.pipeline_logger = getLogger(framework_logcfg_fullpath,
-                                                  name="TEMPLATE")
-    framework.logger = getLogger(framework_logcfg_fullpath,
-                                 name="DRPF")
+    framework.context.pipeline_logger = getLogger(framework_logcfg_fullpath, name="TEMPLATE")
+    framework.logger = getLogger(framework_logcfg_fullpath, name="DRPF")
 
     framework.logger.info("Framework initialized")
 

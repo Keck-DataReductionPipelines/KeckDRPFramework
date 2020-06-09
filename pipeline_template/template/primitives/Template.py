@@ -5,7 +5,7 @@ from keckdrpframework.models.arguments import Arguments
 # has been created in the pipeline directory
 
 
-class Template2(BasePrimitive):
+class MyTemplate(BasePrimitive):
     """
     This is a template for primitives, which is usually an action.
 
@@ -22,6 +22,8 @@ class Template2(BasePrimitive):
         Constructor
         """
         BasePrimitive.__init__(self, action, context)
+        # to use the pipeline logger instead of the framework logger, use this:
+        self.logger = context.pipeline_logger
 
     def _pre_condition(self):
         """Check for conditions necessary to run this process"""
@@ -29,7 +31,7 @@ class Template2(BasePrimitive):
         some_pre_condition = True
 
         if some_pre_condition:
-            self.logger.info("Precondition for Template2 is satisfied")
+            self.logger.info("Precondition for Template is satisfied")
             return True
         else:
             return False
@@ -40,7 +42,7 @@ class Template2(BasePrimitive):
         some_post_condition = True
 
         if some_post_condition:
-            self.logger.info("Postcondition for Template2 is satisfied")
+            self.logger.info("Precondition for Template is satisfied")
             return True
         else:
             return False
@@ -51,5 +53,6 @@ class Template2(BasePrimitive):
         """
 
         # do something with self.args
-        self.logger.info("Running action Template2")
+        self.logger.info("Running Template action")
+
         return self.action.args

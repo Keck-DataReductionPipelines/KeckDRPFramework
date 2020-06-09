@@ -8,7 +8,7 @@ from keckdrpframework.models.processing_context import ProcessingContext
 from keckdrpframework.primitives.simple_fits_reader import SimpleFitsReader
 
 # MODIFY THIS IMPORT to reflect the name of the module created in the primitives directory
-from my_pipeline.primitives.Template import MyTemplate
+from template.primitives.Template import MyTemplate
 
 
 class TemplatePipeline(BasePipeline):
