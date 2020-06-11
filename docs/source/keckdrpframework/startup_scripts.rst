@@ -137,7 +137,7 @@ habit to have a separate configuration file for the framework and one for the pi
 logging configuration file. In the following we will assume that all three files are used.
 
 The basic principle used is this: a standard configuration file is provided for the framework, the pipeline and the logger.
-The configuration files live in a ``config`` directory, part of the main package defining the pipeline. Since it is
+The configuration files live in a ``configs`` directory, part of the main package defining the pipeline. Since it is
 the most likely to need changes, the pipeline configuration file can be overridden by the ``-c`` parameter. A suitable
 part of the code handles this parameter.
 
@@ -170,16 +170,109 @@ The block looks like this:
     else:
         pipeline_config = ConfigClass(args.pipeline_config_file, default_section='TEMPLATE')
 
-While the first two are obvious and are only meant to find the full path for the configuration files,
-the configuration file for the pipeline deserves some explanation.
+While the first two are obvious and are meant to find the full path for the configuration files,
+the entry for the pipeline deserves some explanation.
 In the example shown here, we use ``ConfigClass``, a class provided by the ``keckdrpframework.config.framework_config``
 module. This class subclasses the standard ``ConfigParser`` class and provides a set of default parameters and the
 possibility of specifying a default section of the configuration file. In our case, the section of the configuration
 file is TEMPLATE. This means that the pipeline configuration file will have a ``[TEMPLATE]`` section with
 all the parameters related to the pipeline.
 
+The ``pkg`` variable should be se to the actual name of the current package.
 
-The ``pkg`` variable can be se to the actual name of the current package.
+Initialization of the framework
+-------------------------------
+
+The framework is initialized by creating an instance of the main class. The class takes two arguments: the first
+is the pipeline class imported above, the second is either an instance of ``ConfigClass`` or, in the example
+shown below, the full path to a configuration file.
+
+.. code-block:: python
+
+    try:
+        framework = Framework(TemplatePipeline, framework_config_fullpath)
+        logging.config.fileConfig(framework_logcfg_fullpath)
+        framework.config.instrument = pipeline_config
+    except Exception as e:
+        print("Failed to initialize framework, exiting ...", e)
+        traceback.print_exc()
+        sys.exit(1)
+
+In this example, we are making the assumption that this pipeline reduces data for a specific instrument, and
+to simplify the namespace, we assign the configuration to the variable ``instrument``. As a matter of fact, there
+is only one configuration structure (``framework.config``).  This structure can be expanded to contain other
+configurations, such as the instrument or pipeline configuration shown in the example. This ensures that the
+main configuration and all the additional configuration are always available for classes and functions.
+Note also that we are configuring the entire logging system using ``logging.config.fileConfig``.
+The example configuration file for the logger (``configs/logger.cfg``) already defines two different loggers, one
+for the framework (``DRPF``) and one for the pipeline (``TEMPLATE``). Each of the two loggers use two handlers, a
+console handler and a file handler. The entire system can be configured as desired by changing the logger configuration
+file.
+
+The final step in starting the framework is to assign two loggers to their respective objects:
+
+.. code-block:: python
+
+    framework.context.pipeline_logger = getLogger(framework_logcfg_fullpath, name="TEMPLATE")
+    framework.logger = getLogger(framework_logcfg_fullpath, name="DRPF")
+
+Processing of files and arguments
+---------------------------------
+
+This part of the script depends on which parameters are offered to the users in the argument parsers.
+In the assumption that the parameters are ``-f, -l, -i, -d, -m``, the following example shows how to deal
+with those options.
+
+.. code-block:: python
+
+    if args.queue_manager_only:
+        # The queue manager runs for ever.
+        framework.logger.info("Starting queue manager only, no processing")
+        framework.start_queue_manager()
+
+    # frames processing
+    elif args.frames:
+        for frame in args.frames:
+            # ingesting and triggering the default ingestion event specified in the configuration file
+            framework.ingest_data(None, args.frames, False)
+
+    # processing of a list of files contained in a file
+    elif args.file_list:
+        frames = []
+        with open(args.file_list) as file_list:
+            for frame in file_list:
+                if "#" not in frame:
+                    frames.append(frame.strip('\n'))
+        framework.ingest_data(None, frames, False)
+
+    # ingest an entire directory, trigger "next_file" on each file, optionally continue to monitor if -m is specified
+    elif (len(args.infiles) > 0) or args.dirname is not None:
+        framework.ingest_data(args.dirname, args.infiles, args.monitor)
+
+    framework.start(args.queue_manager_only, args.ingest_data_only, args.wait_for_event, args.continuous)
+
+The code is rather self explanatory. Note that we are making calls to ``ingest_data``: this method of the framework
+is used to perform the basic ingestion and processing of a file. It does two things: 1) parse the header and create
+a Pandas dataframe with the header keywords as columns and entries for each file and 2) trigger the default ingestion
+event as specified in the framework configuration file, usually ``next_file``.
+
+Users have full control on this startup procedure. For example, it is possible to set the default ingestion event
+to one of the "do nothing" events, such as ``noop`` or ``no_event`` (see the base pipeline class), and then manually
+trigger a custom event on each of the imported files by doing something like this:
+
+.. code-block:: python
+
+    for frame in args.frames:
+       arguments = Arguments(name=frame)
+       framework.append_event('my_preferred_event', arguments)
+
+
+The final step is to protect the main function:
+
+.. code-block:: python
+
+    if __name__ == "__main__":
+    main()
 
 Operational modes
 ^^^^^^^^^^^^^^^^^
