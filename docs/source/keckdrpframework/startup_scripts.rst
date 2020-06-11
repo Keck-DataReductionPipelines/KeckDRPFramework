@@ -143,7 +143,8 @@ part of the code handles this parameter.
 
 The block looks like this:
 
-.. code-block:: python
+.. code-block::python
+
     # START HANDLING OF CONFIGURATION FILES ##########
     pkg = 'template'
 
