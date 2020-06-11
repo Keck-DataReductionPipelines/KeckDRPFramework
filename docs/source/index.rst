@@ -18,6 +18,7 @@ Requirements
 KDRPF has the following requirements:
 
 - `Astropy`
+- pandas
 
 Installation
 ============
@@ -28,6 +29,13 @@ You can download the code by cloning this repository::
 Change directory into the KeckDRPF directory and run::
 
   python setup.py install
+
+Note that you will download the ``develop`` branch, which is the default branch.
+To switch to the ``master`` branch, use:
+
+.. code-block:: bash
+
+   git checkout -b master --track origin/master
 
 
 Framework design and concepts

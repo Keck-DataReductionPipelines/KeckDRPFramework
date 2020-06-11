@@ -27,6 +27,8 @@ To read this type of FITS files, we can define a specific FITS reader for KCWI a
         # 2- read the table
         table = hdul[1]
 
+        return ccddata, table
+
 We can then create a primitive that can take care of ingesting a KCWI FITS file by subclassing the ``Base_primitive``
 as described in the previous section:
 
