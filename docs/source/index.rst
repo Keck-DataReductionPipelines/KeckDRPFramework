@@ -44,6 +44,7 @@ Framework design and concepts
 .. toctree::
    :maxdepth: 1
 
+  keckdrpframework/design.rst
   keckdrpframework/startup_scripts.rst
   keckdrpframework/primitives.rst
   keckdrpframework/arguments.rst
