@@ -84,6 +84,8 @@ no fixed rules as to how the arguments are passed to the function. Functions can
 definition of a pipeline (see pagraph about pipelines) or in their own file, as long as the file can be imported and
 the function added to the namespace.
 
+TBD: describe the pre and post functions
+
 
 
 

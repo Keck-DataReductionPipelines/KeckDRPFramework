@@ -3,12 +3,27 @@
 Arguments
 =========
 The ``Arguments`` class provides a flexible way to store any argument that need to be passed to functions or classes.
-Other pipeline frameworks have adopted a rather well-defined data model, using arrays or more sophisticated data
+Other pipeline frameworks have adopted a well-defined data model, using arrays or more sophisticated data
 structures to store FITS files or tables.
 
 For this framework, we have opted for the maximum flexibility.
 
-An example of using the concept of ``arguments`` is the way that we process the Keck Cosmic Web Imager (KCWI) data. For
+A very simple argument can be built by using just the file name:
+
+.. code-block:: python
+
+    from keckdrpframework.models.arguments import Arguments
+    file_name = 'kb01.fits'
+    arguments = Arguments(name=file_name)
+
+This argument can then be used to add an event to the processing queue:
+
+.. code-block:: python
+
+    framework.append_event('my_code', arguments)
+
+The argument class can be extended with any type of Python object using the syntax ``argument.<object``.
+An example of using this concept is the way that we process the Keck Cosmic Web Imager (KCWI) data. For
 this instrument, the raw FITS file is made of two extensions: the actual CCD data and a table listing the shutter
 open/close events with timestamps.
 
@@ -16,45 +31,45 @@ To read this type of FITS files, we can define a specific FITS reader for KCWI a
 
 .. code-block:: python
 
- def kcwi_fits_reader(file):
-    """A reader for KeckData objects.
-    """
-    hdul = fits.open(file)
+    def kcwi_fits_reader(file):
+        """A reader for KeckData objects.
+        """
+        hdul = fits.open(file)
 
-    if len(hdul) == 2:
-        # 1- read the first extension into a ccddata
-        ccddata = CCDData(hdul[0].data, meta=hdul[0].header, unit='adu')
-        # 2- read the table
-        table = hdul[1]
+        if len(hdul) == 2:
+            # 1- read the first extension into a ccddata
+            ccddata = CCDData(hdul[0].data, meta=hdul[0].header, unit='adu')
+            # 2- read the table
+            table = hdul[1]
 
         return ccddata, table
 
 We can then create a primitive that can take care of ingesting a KCWI FITS file by subclassing the ``Base_primitive``
-as described in the previous section:
+as described in the previous section (see primitives_):
 
 .. code-block:: python
 
- class kcwi_fits_ingest(Base_primitive):
+    class kcwi_fits_ingest(Base_primitive):
 
-     def __init__(self, action, context):
-         '''
-         Constructor
-         '''
-         Base_primitive.__init__(self, action, context)
+        def __init__(self, action, context):
+            '''
+            Constructor
+            '''
+            Base_primitive.__init__(self, action, context)
 
-     def _perform(self):
-         '''
-         Expects action.args.name as fits file name
-         Returns HDUs or (later) data model
-         '''
-         name = self.action.args.name
-         self.logger.info(f"Reading {name}")
-         out_args = Arguments()
-         out_args.name = name
-         ccddata, table = self.kcwi_fits_reader(name)
-         out_args.ccddata = ccddata
-         out_args.table = table
-         out_args.imtype = out_args.hdus.header['IMTYPE']
+        def _perform(self):
+            '''
+            Expects action.args.name as fits file name
+            Returns HDUs or (later) data model
+            '''
+            name = self.action.args.name
+            self.logger.info(f"Reading {name}")
+            out_args = Arguments()
+            out_args.name = name
+            ccddata, table = self.kcwi_fits_reader(name)
+            out_args.ccddata = ccddata
+            out_args.table = table
+            out_args.imtype = out_args.hdus.header['IMTYPE']
 
          return out_args
 
@@ -63,7 +78,7 @@ this dictionary later.
 The relevant code is the construction of the ``out_args`` variable: first, it is instantiated as  ``Arguments``, then
 it is populated with various elements such as an Astropy NDData CCDData object for the CCD data, and a table. Finally,
 and just for convenience, the image type is extracted from the header and assigned to the ``imtype`` property of
-the class.
+the class. Any other property can be added to the arguments.
 
 By doing this, we have effectively defined our own KCWI data model as being composed of a CCDData object, plus a table,
 plus additional extracted information such as the image type.

@@ -4,25 +4,23 @@ Events and Actions
 ==================
 
 Events
-^^^^^^
+------
 
-As described in the previous section, a pipeline is defined by creating an event table, linking ``events`` to
-the corresponding class or code.
+A pipeline is defined by creating an event table, linking ``events`` to
+the corresponding class or code (see pipelines_).
 
-To define an event, you need to specify the following four elements: ``name``, ``action``, ``state``, and
+To define an event, we need to specify the following four elements: ``name``, ``action``, ``state``, and
 ``next event``.
 
 The ``name`` is arbitrary and is the only connection between the pipeline, the framework and the corresponding
 code. This means that there is no way to directly call a function or a class other than by the ``name``
-associated with it. For specific purposes, different names can be associated with the same function, by
-creating two or more different events: in this case, the ``action`` would be the same, but the ``name`` would be
-different. The ``state`` and ``next event`` could either be the same or be different.
+associated with it.
 
-The ``state`` is arbitrary. While not fully implemented yet, it can be used to control the flow of the
+The ``state`` is arbitrary. While not widely used yet, it can be used to control the flow of the
 pipeline. For now, it is sufficient to know that once an event is triggered, the special variable ``context.state``
 will be set to the value specified in this field.
 
-The ``next event`` is used to create automatic chains of events, if that is desired. For example,
+The ``next event`` array element is used to create automatic chains of events, if that is desired. For example,
 if you are creating a basic CCD reduction pipeline, you could write events like this:
 
 .. code-block:: python
@@ -40,14 +38,14 @@ The variable ``context.state`` would change value from ``bias_processing`` to ``
 ``flat_processing``.
 
 Actions
-^^^^^^^
+-------
 
-One of the basic functions of the ``Base_pipeline`` is to offer a method to convert an ``Event`` into
-an ``Action``.
+The ``Base_pipeline`` offers a method to convert an ``Event`` into an ``Action``.
 
-This operation is the one that searches the namespace for classes or functions that match the ``action``
+This operation searches the namespace for classes or functions that match the ``action``
 field of the ``event`` that has been triggered, and sends the resulting code to the framework for execution.
 
-The actual execution depends on how the function was declared, but in the most general form the framework
+The actual execution depends on how the code is defined. If the code is contained in a class the framework
 would look for ``pre`` and ``post`` conditions and run the ``apply`` method if it is defined.
 
+See primitives_ for further information.

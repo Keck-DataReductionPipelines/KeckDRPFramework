@@ -50,7 +50,6 @@ Framework design and concepts
   keckdrpframework/arguments.rst
   keckdrpframework/pipelines.rst
   keckdrpframework/events_actions.rst
-  keckdrpframework/framework.rst
   keckdrpframework/plotting_bokeh.rst
   keckdrpframework/template_pipeline.rst
 
