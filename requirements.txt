@@ -1,6 +1,9 @@
+numpy
+astropy
 sphinx
 gitpython
 pytest
 tools
+pillow
 matplotlib
 pandas
