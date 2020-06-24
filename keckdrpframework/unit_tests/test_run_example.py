@@ -54,7 +54,7 @@ def test_run_example_2(init_framework):
     infile = "test_files/571_0001.fits"
     outfile = "output/571_0001.jpg"
 
-    os.unlink (outfile)
+    if os.path.isfile(outfile): os.unlink (outfile)
     f.ingest_data(None, [infile])
 
     f.main_loop()
