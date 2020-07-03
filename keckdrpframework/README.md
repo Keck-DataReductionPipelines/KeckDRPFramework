@@ -10,21 +10,12 @@ The sub-directories:
 
 contain the source code of the DRP framework.
 
-The sub-directories
-- examples
-- templates
+The sub-directory examples contains supplemental code for testing and documentation.
 
-contain supplemental code for testing and documentation.
-
-The sub-directory 'examples' contains a very simple pipeline.
-
-The sub-directory 'templates' contains a skeleton of a pipeline that can be used to start a new pipeline.
-
-Copies of the configuration file 'config.cfg' and the logger configuration file 'logger.cfg' are provided in 'examples' and 'templates'.
+Copies of the configuration file 'config.cfg' and the logger configuration file 'logger.cfg' are provided in 'examples'.
 These configuration files may need to be modified when developing or testing in a new environment.
 
 Similarly, the start-up scripts runTest\_harness.sh and runTest\_template.sh need to be adapted for the actual Python environment.
 
-See templates/make_copy.sh to create a new skeleton pipeline.
  
 
