@@ -12,6 +12,10 @@ import time
 import argparse
 import traceback
 
+from tools.interface import import_module
+
+import_module("keckdrpframework")
+
 from keckdrpframework.core.framework import Framework
 from keckdrpframework.models.arguments import Arguments
 
@@ -69,7 +73,7 @@ if __name__ == "__main__":
         framework.logger.info("Starting queue manager only, no processing")
         framework.start_queue_manager()
     else:
-        framework.logger.info(f"infiles {args.infiles}, dirname {args.dirname}")
+        framework.logger.debug(f"infiles {args.infiles}, dirname {args.dirname}")
         if (len(args.infiles) > 0) or args.dirname is not None:
             # Ingest data and terminate
             framework.ingest_data(args.dirname, args.infiles)

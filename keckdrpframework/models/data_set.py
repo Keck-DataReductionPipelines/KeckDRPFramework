@@ -64,9 +64,8 @@ class DataSet:
             row = self.digest_new_item(filename)
             if not row is None:
                 short = os.path.basename(filename)
-                self.logger.info(f"Appending {short} to the data set")
+                self.logger.debug(f"Appending {short} to the data set")
                 self.data_table = self.data_table.append(row)
-                #self.logger.info("Append item: pushing next file to the queue")
                 try:
                     self.event_queue.put(Event(self.config.default_ingestion_event, Arguments(name=filename)))
                 except:
@@ -78,7 +77,7 @@ class DataSet:
         Called by loop() when monitoring the directory.
         Or can be called on demand.
         """
-        self.logger.info("Ingesting data from: %s" % self.dir_name)
+        self.logger.debug("Ingesting data from: %s" % self.dir_name)
         if self.dir_name is None:
             return
         if not os.path.isdir(self.dir_name):

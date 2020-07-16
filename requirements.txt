@@ -1,4 +1,9 @@
-astropy-helpers
+numpy
+astropy
 sphinx
 gitpython
-sphinx-astropy
+pytest
+tools
+pillow
+matplotlib
+pandas

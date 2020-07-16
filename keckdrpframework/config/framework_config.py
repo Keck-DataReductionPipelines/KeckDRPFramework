@@ -60,10 +60,14 @@ class ConfigClass(ConfigParser):
     def __init__(self, cgfile=None, **kwargs):
         super(ConfigClass, self).__init__(kwargs)
         self.properties = self.config_defaults.copy()
+        if "default_section" in kwargs:
+            self.default_section = kwargs["default_section"]
+        else:
+            self.defatult_section = "DEFAULT"
         if not cgfile is None:
             self.read(cgfile)
 
-    def _getType(self, value, label=""):
+    def _getType(self, value):
         if not isinstance(value, str):
             return value
 
@@ -77,9 +81,10 @@ class ConfigClass(ConfigParser):
             return None
 
         try:
-            return eval(value.strip())
-        except Exception as e:
+            return eval(value)
+        except Exception:
             pass
+
         try:
             i = int(value)
             return i
@@ -115,7 +120,7 @@ class ConfigClass(ConfigParser):
             for k, v in values:
                 if k in known:
                     continue
-                secValues[k] = self._getType(v, label=k)
+                secValues[k] = self._getType(v)
             return secValues
 
         path = self._getPath(cgfile)
@@ -123,7 +128,7 @@ class ConfigClass(ConfigParser):
             return
         super().read(path)
 
-        self.properties.update(digestItems("DEFAULT", {}))
+        self.properties.update(digestItems(self.default_section, {}))
         sections = self.sections()
 
         for sec in sections:

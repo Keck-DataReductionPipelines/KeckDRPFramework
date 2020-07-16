@@ -1,6 +1,8 @@
 """
-Created on Jul 9, 2019
+Example of a primitive, a subclass of BasePrimitive.
 
+This class applies the histogram equalization to an image.
+Created on Jul 9, 2019
         
 @author: skwok
 """
@@ -25,7 +27,7 @@ class HistEqual2d(BasePrimitive):
         """
         BasePrimitive.__init__(self, action, context)
         cfg = self.config.fits2png
-        self.n_hist = eval(cfg.get("DEFAULT", "hist_equal_length", fallback=256 * 256))
+        self.n_hist = cfg.get("DEFAULT", "hist_equal_length", fallback=256 * 256)
         cut_width = cfg.getint("DEFAULT", "hist_equal_cut_width", fallback=3)
         self.cut_low = cfg.getfloat("DEFAULT", "hist_equal_cut_low", fallback=cut_width)
         self.cut_high = cfg.getfloat("DEFAULT", "hist_equal_cut_high", fallback=cut_width)
@@ -113,9 +115,9 @@ class HistEqual2d(BasePrimitive):
         sum1 = np.sum(histg[lo_idx:hi_idx])
         thold = sum1 / (hi_idx - lo_idx) * self.t_factor
         thold = max(leng / n_hist, thold)
-        self.logger.info(f"min thold={leng/n_hist:.2f}, sum1={sum1:.1f}, diff={(hi_idx-lo_idx):.0f}")
+        self.logger.debug(f"min thold={leng/n_hist:.2f}, sum1={sum1:.1f}, diff={(hi_idx-lo_idx):.0f}")
 
-        self.logger.info(f"Hist eq. lo={from_lo:.1f}, hi={from_hi:.1f}, cen={cen:.0f}, std={cstd:.1f}, thold={thold:.1f}")
+        self.logger.debug(f"Hist eq. lo={from_lo:.1f}, hi={from_hi:.1f}, cen={cen:.0f}, std={cstd:.1f}, thold={thold:.1f}")
         return self._applyAHEqHelper(flatData, leng, from_lo, from_hi, 0, n_hist - 1, n_hist, thold)
 
     def _applyAHEq(self, img):

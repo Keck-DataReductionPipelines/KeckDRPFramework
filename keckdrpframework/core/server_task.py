@@ -1,4 +1,6 @@
 """
+@ Deprecated, skwok, April 6, 2020
+Marked for removal.
 
 ServerTask, a task to handle HTTP requests.
 
@@ -7,23 +9,20 @@ Created on Jul 19, 2019
 @author: skwok
 """
 
+import traceback
+from keckdrpframework.models.arguments import Arguments
+from keckdrpframework.utils.easy_http import EasyHTTPHandler, EasyHTTPServer, EasyHTTPServerThreaded
+import io
+import matplotlib.pyplot as plt
 import json
 import socket
 
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 
-import io
-
-from keckdrpframework.utils.easy_http import EasyHTTPHandler, EasyHTTPServer, EasyHTTPServerThreaded
 
 # from utils.try_wrapper import tryEx
-
-from keckdrpframework.models.arguments import Arguments
-
-import traceback
 
 
 class DRPFServerHandler(EasyHTTPHandler):

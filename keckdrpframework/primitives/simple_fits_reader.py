@@ -1,4 +1,6 @@
 """
+Example to read a FITS file.
+
 Created on Jul 9, 2019
 
 Be aware that hdus.close () needs to be called to limit the number of open files at a given time.
@@ -22,13 +24,9 @@ def open_nowarning(filename):
 
 
 class SimpleFitsReader(BasePrimitive):
-    """
-    classdocs
-    """
-
     def __init__(self, action, context):
         """
-        Constructor
+        Initializes the super class.
         """
         BasePrimitive.__init__(self, action, context)
 
@@ -38,7 +36,7 @@ class SimpleFitsReader(BasePrimitive):
         Returns HDUs or (later) data model
         """
         name = self.action.args.name
-        self.logger.info(f"Reading {name}")
+        self.logger.debug(f"Reading {name}")
         out_args = Arguments()
         out_args.name = name
         out_args.img = self.readData(name)
@@ -126,8 +124,8 @@ class SimpleFitsReader(BasePrimitive):
                 dst_x0, dst_x1, dst_y0, dst_y1 = self._split_size(detsec)
                 src_x0, src_x1, src_y0, src_y1 = self._split_size(datasec)
 
-                dst_x0, dst_x1 = match(src_x0, src_x1, dst_x0//binx, dst_x1//binx)
-                dst_y0, dst_y1 = match(src_y0, src_y1, dst_y0//biny, dst_y1//biny)
+                dst_x0, dst_x1 = match(src_x0, src_x1, dst_x0 // binx, dst_x1 // binx)
+                dst_y0, dst_y1 = match(src_y0, src_y1, dst_y0 // biny, dst_y1 // biny)
                 hduh, hduw = hdu.data.shape
 
                 dstx_0, dstx_1, dstx_inc = fix(dst_x0, dst_x1, width)
@@ -139,7 +137,7 @@ class SimpleFitsReader(BasePrimitive):
                 dstx_1p = check(dstx_1)
                 dsty_1p = check(dsty_1)
 
-                dstx_0p = (dstx_0+1) if dstx_0 > dstx_1p else dstx_0
+                dstx_0p = (dstx_0 + 1) if dstx_0 > dstx_1p else dstx_0
 
                 minx = int(np.min((dstx_0p, dstx_1p, minx)))
                 miny = int(np.min((dsty_0, dsty_1p, miny)))
@@ -166,4 +164,3 @@ class SimpleFitsReader(BasePrimitive):
                 if header.get("DETSIZE") is not None:
                     return readMosaic()
             return readSingle()
-

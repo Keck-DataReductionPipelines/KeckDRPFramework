@@ -54,10 +54,10 @@ class BasePrimitive:
 
     def apply(self):
         if self._pre_condition():
-            output = self._perform()
+            self.output = self._perform()
             if self._post_condition():
-                self.output = output
-        return self.output
+                return self.output
+        return None
 
     def __call__(self):
         """

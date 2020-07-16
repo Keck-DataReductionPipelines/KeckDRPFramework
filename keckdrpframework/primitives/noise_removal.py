@@ -53,7 +53,7 @@ class NoiseRemoval(BasePrimitive):
     def _perform(self):
         sigmas, sizes = self.sigmas, self.sizes
         args = self.action.args
-        self.logger.info(f"noise removal sigmas={sigmas}, sizes={sizes}")
+        self.logger.debug(f"noise removal sigmas={sigmas}, sizes={sizes}")
         img = args.img
 
         for a, b in zip(sizes, sigmas):

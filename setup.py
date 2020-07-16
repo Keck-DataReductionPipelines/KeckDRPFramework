@@ -1,36 +1,48 @@
-#!/usr/bin/env python
-
-# Licensed under a 3-clause BSD style license - see LICENSE.rst
-import builtins
-
-# Ensure that astropy-helpers is available
-import ah_bootstrap  # noqa
+# !usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Licensed under a 3-clause BSD license.
 
 from setuptools import setup
-from setuptools.config import read_configuration
 
-from astropy_helpers.setup_helpers import register_commands, get_package_info
-from astropy_helpers.version_helpers import generate_version_py
+# Get some values from the setup.cfg
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 
-# Store the package name in a built-in variable so it's easy
-# to get from other parts of the setup infrastructure
-builtins._ASTROPY_PACKAGE_NAME_ = read_configuration('setup.cfg')['metadata']['name']
+conf = ConfigParser()
+conf.read(['setup.cfg'])
+metadata = dict(conf.items('metadata'))
+options = dict(conf.items('options'))
 
-# Create a dictionary with setup command overrides. Note that this gets
-# information about the package (name and version) from the setup.cfg file.
-cmdclass = register_commands()
+NAME = 'keckdrpframework'
+VERSION = '1.0'
+RELEASE = 'dev' not in VERSION
+AUTHOR = metadata['author']
+AUTHOR_EMAIL = metadata['author_email']
+LICENSE = metadata['license']
+DESCRIPTION = metadata['description']
 
-# Freeze build information in version.py. Note that this gets information
-# about the package (name and version) from the setup.cfg file.
-version = generate_version_py()
 
-#entry_points['console_scripts'] = [
-#    'reduce = keckdrpframework.scripts.reduce:main'
-#]
+# scripts = [fname for fname in glob.glob(os.path.join('scripts', '*'))
+#            if os.path.basename(fname) != 'README.rst']
+scripts = []
+# Define entry points for command-line scripts
+entry_points = {
+    'console_scripts': [
+    ]}
 
-# Get configuration information from all of the various subpackages.
-# See the docstring for setup_helpers.update_package_files for more
-# details.
-package_info = get_package_info()
-
-setup(version=version, cmdclass=cmdclass, **package_info)
+setup(name=NAME,
+      provides=NAME,
+      version=VERSION,
+      license=LICENSE,
+      description=DESCRIPTION,
+      long_description=open('README.rst').read(),
+      author=AUTHOR,
+      author_email=AUTHOR_EMAIL,
+      packages=['keckdrpframework', ],
+      scripts=scripts,
+      entry_points=entry_points,
+      install_requires=options['install_requires'],
+      )

@@ -1,0 +1,21 @@
+language: python
+
+branches:
+  only:
+  - master
+  - develop
+
+python: 
+  - "3.6"
+
+before_install:
+  - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
+  
+install:
+  - pip install -r "requirements.txt"
+  
+script:
+  - python setup.py install
+  - cd keckdrpframework/unit_tests/
+  - mkdir output
+  - pytest

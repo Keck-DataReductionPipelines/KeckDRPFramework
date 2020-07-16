@@ -29,7 +29,16 @@ class ProcessingContext:
         self.debug = False
 
     def push_event(self, event_name, args):
-        self.event_queue_hi.put(Event(event_name, args))
+        """
+        Creates a new event and appends it to the high priority event queue.
+        The high priority queue is local to the current process.
+        The new event is not recurrent.
+        """
+        self.event_queue_hi.put(Event(event_name, args, recurrent=False))
 
-    def append_event(self, event_name, args):
-        self.event_queue.put(Event(event_name, args))
+    def append_new_event(self, event_name, args):
+        """
+        Creates a new event and appends it to the low priority event queue.
+        The low priority queue is local to the current process.
+        """
+        self.event_queue.put(Event(event_name, args, recurrent=recurrent))

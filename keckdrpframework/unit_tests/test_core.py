@@ -5,6 +5,7 @@
 #
 import pytest
 import sys
+import logging
 sys.path.append ("../..")
 
 from keckdrpframework.models.arguments import Arguments
@@ -12,7 +13,6 @@ from keckdrpframework.models.event import Event
 from keckdrpframework.models.processing_context import ProcessingContext
 from keckdrpframework.models.data_set import DataSet
 
-from keckdrpframework.utils.drpf_logger import getLogger
 from keckdrpframework.config.framework_config import ConfigClass
 from keckdrpframework.core.queues import SimpleEventQueue, get_event_queue, QueueServer, _get_queue_manager, start_queue_manager
 
@@ -34,17 +34,17 @@ QueueManager = None
 def test_simple_queue():
     eq = SimpleEventQueue()
     for i in range(5):
-        eq.put(Arguments(name="test", i=i))
+        eq.put(Event("test event", Arguments(name="test argument", i=i)))
     assert eq.qsize() == 5, "Size mismatch"
 
-    a1 = eq.get()
-    a2 = eq.get()
-    assert a2.i == 1, "Wrong element queue"
+    e1 = eq.get()
+    e2 = eq.get()
+    assert e2.args.i == 1, "Wrong event argument"
 
 
 def test_start_queue_server():
     # Start Queue manager process, which will host the shared queue
-    res = start_queue_manager(QueueHost, QueuePortNr, QueueAuthCode)
+    res = start_queue_manager(QueueHost, QueuePortNr, QueueAuthCode, logger=logging.getLogger())
     assert res, "Could not create queue manager"
 
 
@@ -54,7 +54,7 @@ def test_shared_queue_producer():
     assert queue is not None, "Failed to connect to queue manager"
 
     for cnt in range(NItems):
-        queue.put(f"Item {cnt}")
+        queue.put(Event(f"Item {cnt}", None))
 
 
 def test_shared_queue_consumer():
@@ -68,7 +68,7 @@ def test_shared_queue_consumer():
     while ok:
         try:
             item = queue.get(block=False, timeout=3)
-        except:
+        except Exception as e:
             ok = False
             break
         if item is not None:
