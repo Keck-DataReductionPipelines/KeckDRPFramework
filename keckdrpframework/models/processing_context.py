@@ -30,3 +30,6 @@ class ProcessingContext:
 
     def push_event(self, event_name, args):
         self.event_queue_hi.put(Event(event_name, args))
+
+    def append_event(self, event_name, args):
+        self.event_queue.put(Event(event_name, args))

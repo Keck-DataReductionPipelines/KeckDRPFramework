@@ -17,8 +17,21 @@ import pkg_resources
 import os
 import sys
 
+class Struct(object):
+    """ Object that supports access by attribute """
+
+    def __init__(self, arg=None, **kwargs):
+        if isinstance(arg, tuple):
+            self.arg[0] = arg[1]
+        elif isinstance(arg, dict):
+            for k, v in arg.items():
+                setattr(self, k, v)
+        for k, v in kwargs:
+            setattr(self, k, v)
+
 
 class ConfigClass(ConfigParser):
+
     config_defaults = {
         "name": "DRP-Example",
         "monitor_interval": 10,  # sec,
@@ -98,6 +111,7 @@ class ConfigClass(ConfigParser):
         def digestItems(sec, known):
             values = self.items(sec)
             secValues = {}
+            # secValues = Struct()
             for k, v in values:
                 if k in known:
                     continue
@@ -116,13 +130,14 @@ class ConfigClass(ConfigParser):
             self.properties[sec] = digestItems(sec, self.properties)
 
     def __getattr__(self, key):
-        key = key.lower()
+        # key = key.lower()
         val = self.properties.get(key)
         if val is not None:
             return val
 
         if key in self.sections():
-            return dict(self.items(key))
+            # return dict(self.items(key))
+            return Struct(self.items(key))
 
         return None
 
