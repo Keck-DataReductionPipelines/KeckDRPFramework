@@ -36,7 +36,7 @@ class ProcessingContext:
         """
         self.event_queue_hi.put(Event(event_name, args, recurrent=False))
 
-    def append_new_event(self, event_name, args):
+    def append_new_event(self, event_name, args, recurrent=False):
         """
         Creates a new event and appends it to the low priority event queue.
         The low priority queue is local to the current process.
