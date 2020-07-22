@@ -58,7 +58,7 @@ class Framework(object):
         Instance of Processing_context, which passed along to all processing steps.
     """
 
-    def __init__(self, pipeline_name, configFile):
+    def __init__(self, pipeline_name, configFile, testing=False):
         """
         pipeline_name: name of the pipeline class containing recipes
 
@@ -70,6 +70,8 @@ class Framework(object):
             self.config = ConfigClass(configFile)
         else:
             self.config = configFile
+
+        self.testing = testing
 
         self.logger = getLogger(self.config.logger_config_file, name="DRPF")
         self.logger.info("")
@@ -236,11 +238,14 @@ class Framework(object):
                     context.state = "stop"
                 else:
                     self.store_arguments = action.args
-        except:
-            self.logger.error("Exception while invoking {}".format(action_name))
-            context.state = "stop"
-            if self.config.print_trace:
-                traceback.print_exc()
+        except Exception as e:
+            if self.testing:
+                raise # reraise so that testing infrastructure catches it
+            else:
+                self.logger.error(f"Exception {e} while invoking {action_name}")
+                context.state = "stop"
+                if self.config.print_trace:
+                    traceback.print_exc()
 
     def _action_completed(self, successful, action):
         event = action.event
@@ -304,9 +309,13 @@ class Framework(object):
                 self.logger.error(f"Failed to get retrieve events. Queue may be closed.")
                 break
             except Exception as e:
-                self.logger.error(f"Exception while processing action {action}, {e}")
-                if self.config.print_trace:
-                    traceback.print_exc()
+                if self.testing:
+                    self.logger.info("Reraising exception (testing mode)")
+                    raise # exceptions caught by testing framework, not here
+                else:
+                    self.logger.error(f"Framework main_loop: Exception while processing action {action}, {e}")
+                    if self.config.print_trace:
+                        traceback.print_exc()
 
             self._action_completed(success, action)
 
