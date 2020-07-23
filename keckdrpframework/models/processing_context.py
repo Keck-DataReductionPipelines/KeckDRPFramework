@@ -28,7 +28,7 @@ class ProcessingContext:
         self.data_set = None
         self.debug = False
 
-    def push_event(self, event_name, args):
+    def push_hi_event(self, event_name, args):
         """
         Creates a new event and appends it to the high priority event queue.
         The high priority queue is local to the current process.
@@ -36,7 +36,13 @@ class ProcessingContext:
         """
         self.event_queue_hi.put(Event(event_name, args, recurrent=False))
 
-    def append_new_event(self, event_name, args, recurrent=False):
+    def push_event(self, event_name, args):
+        """
+        Deprecated use push_hi_event instead
+        """
+        self.push_hi_event(event_name, args)
+
+    def append_event(self, event_name, args, recurrent=False):
         """
         Creates a new event and appends it to the low priority event queue.
         The low priority queue is local to the current process.
