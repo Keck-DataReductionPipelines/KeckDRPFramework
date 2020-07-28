@@ -56,6 +56,19 @@ class Framework(object):
 
     context :
         Instance of Processing_context, which passed along to all processing steps.
+
+    on_state (action, context):
+        A callback to change the context.state if desired, for example to force to continue or to stop
+
+    on_exit (status)"
+        Called after exiting the main_loop and before exiting. 
+        Pipeline clean up code should be here.
+
+    on_error(action, context, exception):
+        Called when an exception is caught and passed to the pipeline.
+        User should define their own on_error() function.
+        See test_run_example.py.
+
     """
 
     def __init__(self, pipeline_name, configFile, testing=False):
@@ -87,6 +100,11 @@ class Framework(object):
 
         # The done_queue
         self.done_queue = None
+
+        # The handlers
+        self.on_exit = self.default_on_exit
+        self.on_state = self.default_on_state
+        self.on_error = self.default_on_error
 
         self.context = ProcessingContext(self.event_queue, self.event_queue_hi, self.logger, self.config)
 
@@ -240,10 +258,11 @@ class Framework(object):
                     self.store_arguments = action.args
         except Exception as e:
             if self.testing:
-                raise # reraise so that testing infrastructure catches it
+                raise  # reraise so that testing infrastructure catches it
             else:
                 self.logger.error(f"Exception {e} while invoking {action_name}")
                 context.state = "stop"
+                self.on_error(action, context, e)
                 if self.config.print_trace:
                     traceback.print_exc()
 
@@ -287,7 +306,7 @@ class Framework(object):
                 success = False
                 event = self.get_event()
                 if event is None:
-                    self.logger.debug("No new events - do nothing")
+                    self.logger.info("No new events - do nothing")
 
                     if self.event_queue.qsize() == 0 and self.event_queue_hi.qsize() == 0:
                         self.logger.debug(f"No pending events or actions, terminating")
@@ -302,7 +321,7 @@ class Framework(object):
                 action = self.event_to_action(event, self.context)
                 self.execute(action, self.context)
                 success = action.output is not None
-                self.context.state = self.on_state(self.context.state)
+                self.on_state(action, self.context)
                 if self.context.state == "stop":
                     break
             except BrokenPipeError as bpe:
@@ -311,9 +330,10 @@ class Framework(object):
             except Exception as e:
                 if self.testing:
                     self.logger.info("Reraising exception (testing mode)")
-                    raise # exceptions caught by testing framework, not here
+                    raise  # exceptions caught by testing framework, not here
                 else:
                     self.logger.error(f"Framework main_loop: Exception while processing action {action}, {e}")
+                    self.on_error(action, self.context, e)
                     if self.config.print_trace:
                         traceback.print_exc()
 
@@ -389,8 +409,12 @@ class Framework(object):
             ds = DataSet(path, self.logger, self.config, self.context.event_queue)
 
         if files is not None:
-            for f in files:
-                ds.append_item(f)
+            if type(files) == str:
+                self.logger.info(f"ingest {files}")
+                ds.append_item(files)
+            else:
+                for f in files:
+                    ds.append_item(f)
 
         # for ditem in ds.data_table.index:
         #    self.logger.info("File ingestion: pushing next file event to the queue")
@@ -416,22 +440,30 @@ class Framework(object):
                 self.logger.info("Framework main loop started")
                 self.wait_for_ever()
 
-    def on_exit(self, status=0):
+    def default_on_exit(self, status=0):
         """
-        Hook fo exit
+        Hook, called before exiting
         Subclasses can override to continue in the main_loop or call exit(status)
+        Let applications register callback or subclassing
         """
         os._exit(status)
 
-    def on_state(self, state):
+    def default_on_state(self, action, context):
         """
         Hook to change context state.
         Default is to ignore state = 'stop'.
         To terminate, override this method to return 'stop'.
         """
-        if state == "stop":
-            state = "ready"
-        return state
+        if context.state == "stop":
+            context.state = "ready"
+
+    def default_on_error(self, action, context, exception):
+        """
+        Hook for error handling
+        Default is do nothing
+        Alternative is raise exception
+        """
+        return
 
 
 def find_pipeline(pipeline_name, pipeline_path, context, logger):

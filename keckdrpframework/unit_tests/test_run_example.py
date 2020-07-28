@@ -49,6 +49,9 @@ def test_run_example(init_framework):
 
 
 def test_run_example_2(init_framework):
+    """
+    Ingests one file, runs the loop and checks if output is there
+    """
     f = init_framework
 
     infile = "test_files/571_0001.fits"
@@ -64,6 +67,10 @@ def test_run_example_2(init_framework):
 
 
 def test_run_example_3(init_framework):
+    """
+    Adds events directly to the queue and runs the loop.
+    There should be 6 output files.
+    """
     f = init_framework
 
     flist = glob.glob("test_files/*.fits")
@@ -81,7 +88,40 @@ def test_run_example_3(init_framework):
     assert len(in_progress) == 0, f"Unexpected events in progress, should be none"
 
 
+def test_run_example_error_handling(init_framework):
+    """
+    Tests the error handling
+    """
+
+    def on_state(action, context):
+        raise Exception("Simulated exception")
+
+    def on_error(action, context, exception):
+        raise Exception(f"Caught exception {exception}")
+
+    f = init_framework
+    f.on_state = on_state
+    f.on_error = on_error
+
+    infile = "test_files/571_0001.fits"
+    outfile = "output/571_0001.jpg"
+
+    if os.path.isfile(outfile):
+        os.unlink(outfile)
+    f.ingest_data(None, [infile])
+
+    try:
+        f.main_loop()
+        assert False, f"Did not catch exception"
+    except Exception as e:
+        assert e.args[0] == "Caught exception Simulated exception", f"Unexpected exception message"
+
+
 def test_terminate(init_framework):
+    """
+    Last test. 
+    There should be nothing left in the queues.
+    """
     f = init_framework
     qsz1, hiqsz = f.get_pending_events()
     assert len(hiqsz) == 0, "Unexpected items in high priority event queue"

@@ -60,16 +60,27 @@ class DataSet:
         """
         Appends item, if not already exists.
         """
-        if filename is not None and os.path.isfile(filename) and not filename in self.data_table.index:
-            row = self.digest_new_item(filename)
-            if not row is None:
-                short = os.path.basename(filename)
-                self.logger.debug(f"Appending {short} to the data set")
-                self.data_table = self.data_table.append(row)
-                try:
-                    self.event_queue.put(Event(self.config.default_ingestion_event, Arguments(name=filename)))
-                except:
-                    self.logger.warn("There is no default ingestion event in the configuration file")
+        if filename is None:
+            self.logger.warning(f"filename is defined")
+            return
+
+        if not os.path.isfile(filename):
+            self.logger.warning(f"{filename} is not a file")
+            return
+
+        if filename in self.data_table.index:
+            self.logger.warning(f"{filename} is already in the table")
+            return
+
+        row = self.digest_new_item(filename)
+        if not row is None:
+            short = os.path.basename(filename)
+            self.logger.debug(f"Appending {short} to the data set")
+            self.data_table = self.data_table.append(row)
+            try:
+                self.event_queue.put(Event(self.config.default_ingestion_event, Arguments(name=filename)))
+            except:
+                self.logger.warning("There is no default ingestion event in the configuration file")
 
     def update_data_set(self):
         """
@@ -102,7 +113,7 @@ class DataSet:
         try:
             return self.data_table.at[index, column]
         except:
-            self.logger.warn("Keyword %s is not available" % str(column))
+            self.logger.warning("Keyword %s is not available" % str(column))
             return None
 
     def get_size(self):
@@ -112,7 +123,7 @@ class DataSet:
         try:
             self.data_table.at[index, column] = value
         except Exception as e:
-            self.logger.warn(f"Failed to set data_table[{index},{columns}] to {value}")
+            self.logger.warning(f"Failed to set data_table[{index},{columns}] to {value}")
 
     def _loop(self):
         """
