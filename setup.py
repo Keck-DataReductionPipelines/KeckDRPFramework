@@ -3,7 +3,7 @@
 #
 # Licensed under a 3-clause BSD license.
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Get some values from the setup.cfg
 try:
@@ -41,7 +41,7 @@ setup(name=NAME,
       long_description=open('README.rst').read(),
       author=AUTHOR,
       author_email=AUTHOR_EMAIL,
-      packages=['keckdrpframework', ],
+      packages=find_packages(),
       scripts=scripts,
       entry_points=entry_points,
       install_requires=options['install_requires'],
