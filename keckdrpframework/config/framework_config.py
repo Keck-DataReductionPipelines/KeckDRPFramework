@@ -50,7 +50,7 @@ class ConfigClass(ConfigParser):
         if "default_section" in kwargs:
             self.default_section = kwargs["default_section"]
         else:
-            self.defatult_section = "DEFAULT"
+            self.default_section = "DEFAULT"
         if not cgfile is None:
             self.read(cgfile)
 

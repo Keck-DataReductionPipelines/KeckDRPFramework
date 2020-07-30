@@ -27,7 +27,7 @@ class HistEqual2d(BasePrimitive):
         """
         BasePrimitive.__init__(self, action, context)
         cfg = self.config.fits2png
-        self.n_hist = eval(cfg.get("DEFAULT", "hist_equal_length", fallback=256 * 256))
+        self.n_hist = eval(cfg.get("DEFAULT", "hist_equal_length", fallback="256 * 256"))
         cut_width = cfg.getint("DEFAULT", "hist_equal_cut_width", fallback=3)
         self.cut_low = cfg.getfloat("DEFAULT", "hist_equal_cut_low", fallback=cut_width)
         self.cut_high = cfg.getfloat("DEFAULT", "hist_equal_cut_high", fallback=cut_width)

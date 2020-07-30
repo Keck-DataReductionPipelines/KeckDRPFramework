@@ -120,9 +120,9 @@ def test_append_new_event(init_context):
     Append new event 
     """
     pc = init_context
-    pc.append_new_event("test", Arguments("test", a=1))
-    pc.append_new_event("test1", Arguments("test1", a=2))
-    pc.append_new_event("test2", Arguments("test2", a=3))
+    pc.append_event("test", Arguments("test", a=1))
+    pc.append_event("test1", Arguments("test1", a=2))
+    pc.append_event("test2", Arguments("test2", a=3))
 
     e1 = pc.event_queue.get()
     e2 = pc.event_queue.get()
