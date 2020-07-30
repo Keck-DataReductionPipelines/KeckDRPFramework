@@ -3,7 +3,7 @@
 #
 # Licensed under a 3-clause BSD license.
 
-from setuptools import find_packages
+from setuptools import setup, find_packages
 
 # Get some values from the setup.cfg
 try:
