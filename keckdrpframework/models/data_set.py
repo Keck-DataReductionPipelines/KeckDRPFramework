@@ -154,4 +154,21 @@ class DataSet:
         thr.start()
 
     def stop_monitor(self):
+        """
+        Stops the monitoring thread
+        """
         self.must_stop = True
+
+    def remove_all(self):
+        """
+        Removes all entries in data_table.
+        """
+        self.data_table = self.data_table[0:0]
+        self.logger.info(f"Remove all entries date set table")
+
+    def change_directory(self, dirname):
+        """
+        Changes data set directory
+        """
+        self.dir_name = dirname
+        self.logger.info(f"Changed data set dir to {dirname}")
