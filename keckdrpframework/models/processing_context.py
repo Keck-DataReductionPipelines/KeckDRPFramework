@@ -19,14 +19,16 @@ class ProcessingContext:
         The context is a container for data needed for the pipeline.
         It is passed along as parameter in each method called in the pipeline class.
         """
+        self.name = "Processing_context"
         self.state = "Undefined"
         self.event_queue_hi = event_queue_hi
         self.event_queue = event_queue
         self.logger = logger
         self.config = config
         self.data_set = None
+        self.debug = False
 
-    def push_event(self, event_name, args):
+    def push_hi_event(self, event_name, args):
         """
         Creates a new event and appends it to the high priority event queue.
         The high priority queue is local to the current process.
@@ -34,8 +36,15 @@ class ProcessingContext:
         """
         self.event_queue_hi.put(Event(event_name, args, recurrent=False))
 
-    def append_new_event(self, event_name, args, recurrent=False):
+    def push_event(self, event_name, args):
         """
-        Appends a new event to the low priority event queue
+        Deprecated use push_hi_event instead
+        """
+        self.push_hi_event(event_name, args)
+
+    def append_event(self, event_name, args, recurrent=False):
+        """
+        Creates a new event and appends it to the low priority event queue.
+        The low priority queue is local to the current process.
         """
         self.event_queue.put(Event(event_name, args, recurrent=recurrent))
