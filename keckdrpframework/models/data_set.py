@@ -123,7 +123,7 @@ class DataSet:
         try:
             self.data_table.at[index, column] = value
         except Exception as e:
-            self.logger.warning(f"Failed to set data_table[{index},{columns}] to {value}")
+            self.logger.warning(f"Failed to set data_table[{index},{column}] to {value}")
 
     def _loop(self):
         """
