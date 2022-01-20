@@ -28,7 +28,13 @@ You can download the code by cloning this repository::
 
 Change directory into the KeckDRPF directory and run::
 
-  python setup.py install
+  pip install .
+
+If you want to install the Keck DRP Framework for development purposes, you can run::
+
+  pip install -e .
+
+to install it in editable mode.
 
 Note that you will download the ``develop`` branch, which is the default branch.
 To switch to the ``master`` branch, use:
