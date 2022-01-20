@@ -1,0 +1,9 @@
+# generated during the build
+
+build/
+keckdrpframework.egg-info/
+
+# generated during the tests
+
+*__pycache__/
+
