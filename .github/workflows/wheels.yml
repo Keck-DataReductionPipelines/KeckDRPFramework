@@ -1,0 +1,60 @@
+# Workflow to build and test wheels
+name: Wheel builder
+
+on:
+  push:
+    branches:
+      - master
+  # Manual run
+  workflow_dispatch:
+
+jobs:
+  # Build the wheels and the source ta
+  build_wheels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout KeckDRPF
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'  # update once build dependencies are available
+
+      - name: Build wheels
+        run: pip wheel -w wheelhouse .
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Wheel
+          path: wheelhouse/keckdrpframework*.whl
+
+  # Build the source distribution under Linux
+  build_sdist:
+    name: Source distribution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout KeckDRPF
+        uses: actions/checkout@v1
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'  # update once build dependencies are available
+
+      - name: Build source distribution
+        run: |
+          python -m venv ~/build_env
+          source ~/build_env/bin/activate
+          pwd; ls
+          python setup.py sdist
+
+      - name: Store artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Source tarball
+          path: dist/*.tar.gz
+
