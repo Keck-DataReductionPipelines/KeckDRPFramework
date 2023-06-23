@@ -53,12 +53,16 @@ class BasePrimitive:
         raise Exception("Not yet implemented")
 
     def apply(self):
-        if self._pre_condition():
-            self.output = self._perform()
-            if self._post_condition():
-                return self.output
+        try:
+            if self._pre_condition():
+                self.output = self._perform()
+                if self._post_condition():
+                    return self.output
+        except Exception as e:
+            self.logger.error(f"Failed executing primitive {self.__class__.__name__}: {e}\n{traceback.format_exc()}")
+            raise(e)
         return None
-
+    
     def __call__(self):
         """
         Makes objects of this calls callable.
