@@ -19,7 +19,7 @@ import socket
 
 import matplotlib
 
-matplotlib.use("Agg")
+# matplotlib.use("Agg")
 
 
 # from utils.try_wrapper import tryEx
