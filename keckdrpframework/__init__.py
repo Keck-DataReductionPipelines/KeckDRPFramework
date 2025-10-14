@@ -17,9 +17,9 @@ __minimum_python_version__ = "3.6"
 __all__ = []
 
 
-class UnsupportedPythonError(Exception):
-    pass
+# class UnsupportedPythonError(Exception):
+#     pass
 
 
-if parse_version(sys.version) < parse_version(__minimum_python_version__):
-    raise UnsupportedPythonError("keckdrpframework does not support Python < {}".format(__minimum_python_version__))
+# if parse_version(sys.version) < parse_version(__minimum_python_version__):
+#     raise UnsupportedPythonError("keckdrpframework does not support Python < {}".format(__minimum_python_version__))
