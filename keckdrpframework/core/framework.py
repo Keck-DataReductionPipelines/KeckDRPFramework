@@ -115,6 +115,9 @@ class Framework(object):
 
         self.pipeline = pipeline
 
+        import multiprocessing
+        self.mpl_queue = multiprocessing.Queue()
+
         self.keep_going = True
         self.init_signal()
         self.store_arguments = Arguments()
@@ -291,7 +294,7 @@ class Framework(object):
         except Exception as e:
             self.logger.error(f"Exception occured while in _action_completed, {e}")
 
-    def main_loop(self):
+    def main_loop(self, args):
         """
         This is the main action loop.
 
@@ -319,6 +322,7 @@ class Framework(object):
                     continue
 
                 action = self.event_to_action(event, self.context)
+                action.args.mpl_queue = args
                 self.execute(action, self.context)
                 success = action.output is not None
                 self.on_state(action, self.context)
@@ -342,15 +346,15 @@ class Framework(object):
         self.keep_going = False
         self.logger.info("Exiting main loop")
 
-    def _main_loop_helper(self):
-        self.main_loop()
+    def _main_loop_helper(self, args):
+        self.main_loop(args)
         self.on_exit(0)
 
     def start_action_loop(self):
         """
         This is a thread running the action loop.
         """
-        thr = threading.Thread(name="action_loop", target=self._main_loop_helper)
+        thr = threading.Thread(name="action_loop", target=self._main_loop_helper, args=(self.mpl_queue,))
         thr.setDaemon(True)
         thr.start()
 
@@ -390,7 +394,31 @@ class Framework(object):
         Because the action loops runs in a thread, this methods waits until keep_going is false.         
         """
         while self.keep_going:
-            time.sleep(1)
+             # Check the mpl queue to see if we need to plot anything
+            import matplotlib.pyplot as plt
+            try:
+                event_axes = self.mpl_queue.get_nowait()
+                self.logger.info("mpl queue event received")
+
+                if event_axes is not None:
+                    print("Plot event received")
+                    self.logger.info(f"Plot event received: {event_axes}")
+                    fig = event_axes[0]
+                    managed_fig = plt.figure()
+                    canvas_manager = managed_fig.canvas.manager
+                    canvas_manager.canvas.figure = fig
+                    fig.set_canvas(canvas_manager.canvas)
+                    plt.ion()
+                    plt.show()
+                    # plt.pause(0.1)
+
+                    # plt.show()
+
+            except Exception as e:
+                self.logger.info(f"No mpl event received: {e}")
+                pass
+            plt.pause(1)
+            # time.sleep(1)
 
     def get_pending_events(self):
         return self.event_queue.get_pending(), self.event_queue_hi.get_pending()
