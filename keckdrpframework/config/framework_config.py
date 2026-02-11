@@ -13,7 +13,7 @@ To do:
 
 from keckdrpframework.models.event import Event
 from configparser import ConfigParser
-import pkg_resources
+import importlib_resources
 import os
 import sys
 
@@ -92,10 +92,11 @@ class ConfigClass(ConfigParser):
 
         if os.path.isfile(path):
             return path
-        else:
-            fullpath = pkg_resources.resource_filename(__name__, path)
-            if os.path.isfile(fullpath):
-                return fullpath
+        else:            
+            ref = importlib_resources.files(__name__) / path
+            with importlib_resources.as_file(ref) as fullpath:
+                if os.path.isfile(fullpath):
+                    return fullpath
 
         return None
 

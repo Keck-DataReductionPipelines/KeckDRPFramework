@@ -7,7 +7,8 @@ import time
 import argparse
 import sys
 import traceback
-import pkg_resources
+import os
+import importlib_resources
 import logging.config
 
 # the preferred way to import the pipeline is a direct import
@@ -42,6 +43,11 @@ def _parseArguments(in_args):
     args = parser.parse_args(in_args[1:])
     return args
 
+def get_pkg_fullpath(pkg, path):
+    ref = importlib_resources.files(pkg) / path
+    with importlib_resources.as_file(ref) as fullpath:
+        if os.path.isfile(fullpath):
+            return fullpath 
 
 def main():
 
@@ -51,23 +57,23 @@ def main():
     pkg = 'template'
 
     # load the framework config file from the config directory of this package
-    # this part uses the pkg_resources package to find the full path location
+    # this part uses the importlib_resources package to find the full path location
     # of framework.cfg
     framework_config_file = "configs/framework.cfg"
-    framework_config_fullpath = pkg_resources.resource_filename(pkg, framework_config_file)
+    framework_config_fullpath = get_pkg_fullpath(pkg, framework_config_file)
 
     # load the logger config file from the config directory of this package
-    # this part uses the pkg_resources package to find the full path location
+    # this part uses the importlib_resources package to find the full path location
     # of logger.cfg
     framework_logcfg_file = 'configs/logger.cfg'
-    framework_logcfg_fullpath = pkg_resources.resource_filename(pkg, framework_logcfg_file)
+    framework_logcfg_fullpath = get_pkg_fullpath(pkg, framework_logcfg_file)
 
     # add PIPELINE specific config files
-    # this part uses the pkg_resource package to find the full path location
+    # this part uses the importlib_resources package to find the full path location
     # of template.cfg or uses the one defines in the command line with the option -c
     if args.config_file is None:
         pipeline_config_file = 'configs/template.cfg'
-        pipeline_config_fullpath = pkg_resources.resource_filename(pkg, pipeline_config_file)
+        pipeline_config_fullpath = get_pkg_fullpath(pkg, pipeline_config_file)
         pipeline_config = ConfigClass(pipeline_config_fullpath, default_section='TEMPLATE')
     else:
         pipeline_config = ConfigClass(args.pipeline_config_file, default_section='TEMPLATE')
