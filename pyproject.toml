@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "keckdrpframework"
+version = "1.0.0"
+description = "Framework for DRPs at Keck"
+authors = ["M. Brodheim <mbrodheim@keck.hawaii.edu>", "L. Rizzi", "S. Kwok", "M. Brown"]
+license = "BSD-3-Clause"
+readme = "README.rst"
+homepage = "https://github.com/Keck-DataReductionPipelines/KeckDRPFramework.git"
+repository = "https://github.com/Keck-DataReductionPipelines/KeckDRPFramework.git"
+packages = [{ include = "keckdrpframework" }]
+
+[tool.poetry.dependencies]
+python = ">=3.6"
+# From setup.cfg install_requires
+astropy = "*"
+# From requirements.txt (runtime)
+numpy = "*"
+gitpython = "*"pillow = "*"
+matplotlib = "*"
+pandas = "*"
+importlib_resources = "*"
+
+[tool.poetry.group.dev.dependencies]
+# From requirements.txt (dev)
+pytest = "*"
+sphinx = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
