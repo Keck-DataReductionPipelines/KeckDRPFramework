@@ -47,7 +47,7 @@ def get_pkg_fullpath(pkg, path):
     ref = importlib_resources.files(pkg) / path
     with importlib_resources.as_file(ref) as fullpath:
         if os.path.isfile(fullpath):
-            return fullpath 
+            return str(fullpath) 
 
 def main():
 

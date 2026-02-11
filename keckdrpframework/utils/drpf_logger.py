@@ -25,7 +25,7 @@ def getLogger(conf_file=None, name="DRPF"):
             ref = importlib_resources.files(__name__) / path
             with importlib_resources.as_file(ref) as conf_file:
                 if os.path.exists(conf_file):
-                    logging.config.fileConfig(conf_file)
+                    logging.config.fileConfig(str(conf_file))
                     return logging.getLogger(name)
 
     return logging.getLogger()

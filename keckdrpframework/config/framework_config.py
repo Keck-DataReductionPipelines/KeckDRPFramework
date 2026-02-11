@@ -96,7 +96,7 @@ class ConfigClass(ConfigParser):
             ref = importlib_resources.files(__name__) / path
             with importlib_resources.as_file(ref) as fullpath:
                 if os.path.isfile(fullpath):
-                    return fullpath
+                    return str(fullpath)
 
         return None
 
