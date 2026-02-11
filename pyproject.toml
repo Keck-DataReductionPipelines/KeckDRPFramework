@@ -2,7 +2,12 @@
 name = "keckdrpframework"
 version = "1.0.0"
 description = "Framework for DRPs at Keck"
-authors = ["M. Brodheim <mbrodheim@keck.hawaii.edu>", "L. Rizzi", "S. Kwok", "M. Brown"]
+authors = [
+    "M. Brodheim <mbrodheim@keck.hawaii.edu>",
+    "L. Rizzi",
+    "S. Kwok",
+    "M. Brown"
+]
 license = "BSD-3-Clause"
 readme = "README.rst"
 homepage = "https://github.com/Keck-DataReductionPipelines/KeckDRPFramework.git"
@@ -15,7 +20,8 @@ python = ">=3.6"
 astropy = "*"
 # From requirements.txt (runtime)
 numpy = "*"
-gitpython = "*"pillow = "*"
+gitpython = "*"
+pillow = "*"
 matplotlib = "*"
 pandas = "*"
 importlib_resources = "*"
