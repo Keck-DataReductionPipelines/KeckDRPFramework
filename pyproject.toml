@@ -16,15 +16,15 @@ packages = [{ include = "keckdrpframework" }]
 
 [tool.poetry.dependencies]
 python = ">=3.8"
-pandas = "*"
+pandas = ">=2.0.0"
+numpy = "<=2.0.0"
 importlib_resources = "*"
 astropy = { version = ">=6.1.7" , optional = true }
-numpy = { version = "<=2.0.0" , optional = true }
 pillow = { version = ">=12.1.1" , optional = true }
 matplotlib = { version = ">=3.9.4" , optional = true }
 
 [tool.poetry.extras]
-demos = ["astropy", "numpy", "pillow", "matplotlib"]
+demos = ["astropy", "pillow", "matplotlib"]
 
 [tool.poetry.group.dev.dependencies]
 # From requirements.txt (dev)
