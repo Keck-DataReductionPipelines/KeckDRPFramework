@@ -15,16 +15,16 @@ repository = "https://github.com/Keck-DataReductionPipelines/KeckDRPFramework.gi
 packages = [{ include = "keckdrpframework" }]
 
 [tool.poetry.dependencies]
-python = ">=3.6"
-# From setup.cfg install_requires
-astropy = "*"
-# From requirements.txt (runtime)
-numpy = "*"
-gitpython = "*"
-pillow = "*"
-matplotlib = "*"
+python = ">=3.8"
 pandas = "*"
 importlib_resources = "*"
+astropy = { version = ">=6.1.7" , optional = true }
+numpy = { version = "<=2.0.0" , optional = true }
+pillow = { version = ">=12.1.1" , optional = true }
+matplotlib = { version = ">=3.9.4" , optional = true }
+
+[tool.poetry.extras]
+demos = ["astropy", "numpy", "pillow", "matplotlib"]
 
 [tool.poetry.group.dev.dependencies]
 # From requirements.txt (dev)
