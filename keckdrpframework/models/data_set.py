@@ -76,7 +76,7 @@ class DataSet:
         if not row is None:
             short = os.path.basename(filename)
             self.logger.debug(f"Appending {short} to the data set")
-            self.data_table = self.data_table.append(row)
+            self.data_table = self.data_table._append(row)
             try:
                 self.event_queue.put(Event(self.config.default_ingestion_event, Arguments(name=filename)))
             except:
