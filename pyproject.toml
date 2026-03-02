@@ -18,8 +18,8 @@ packages = [{ include = "keckdrpframework" }]
 python = ">=3.8"
 pandas = ">=2.0.0"
 numpy = "<=2.0.0"
-importlib_resources = "*"
-astropy = { version = ">=6.1.7" , optional = true }
+importlib_resources = ">=6.5.0"
+astropy = ">=7.0.0"
 pillow = { version = ">=12.1.1" , optional = true }
 matplotlib = { version = ">=3.9.4" , optional = true }
 
