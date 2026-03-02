@@ -10,9 +10,8 @@
 # Enforce Python version check during package import.
 # This is the same check as the one at the top of setup.py
 import sys
-from distutils.version import LooseVersion
 
-__minimum_python_version__ = "3.6"
+__minimum_python_version__ = "3.6.0"
 
 __all__ = []
 
@@ -20,6 +19,10 @@ __all__ = []
 class UnsupportedPythonError(Exception):
     pass
 
+min_version_tuple = tuple(map(int, __minimum_python_version__.split('.')))
+current_version = sys.version_info[:3]
 
-if LooseVersion(sys.version) < LooseVersion(__minimum_python_version__):
-    raise UnsupportedPythonError("keckdrpframework does not support Python < {}".format(__minimum_python_version__))
+if current_version < min_version_tuple:
+    raise UnsupportedPythonError(
+        "keckdrpframework does not support Python < {}".format(__minimum_python_version__)
+    )
